@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import App from '../../test d\'intégration/my-app/src/App';
+import App from './App';
 
 beforeEach(() => {
   localStorage.clear();
@@ -14,7 +14,12 @@ describe('Integration Tests - Inscription Form', () => {
     expect(screen.getByLabelText(/^Nom :/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Prénom :/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Email :/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Date de naissance :/i)).toBeInTheDocument();
+    
+    // Vérification du champ Date de naissance (Label FR et type date)
+    const dateInput = screen.getByLabelText(/Date de naissance :/i);
+    expect(dateInput).toBeInTheDocument();
+    expect(dateInput).toHaveAttribute('type', 'date');
+
     expect(screen.getByLabelText(/Code Postal :/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Ville :/i)).toBeInTheDocument();
 
@@ -63,8 +68,13 @@ describe('Integration Tests - Inscription Form', () => {
     const errorMessages = screen.getAllByText(/Le nom ne doit contenir que des lettres/i);
     expect(errorMessages.length).toBeGreaterThan(0);
 
-    // Date Mineur
+    // Date Requise (Vérification du message en français)
     const dateInput = screen.getByLabelText(/Date de naissance :/i);
+    fireEvent.focus(dateInput);
+    fireEvent.blur(dateInput);
+    expect(screen.getByText(/Date requise/i)).toBeInTheDocument();
+
+    // Date Mineur
     const today = new Date();
     const minorYear = today.getFullYear() - 10;
     fireEvent.change(dateInput, { target: { value: `${minorYear}-01-01` } });
