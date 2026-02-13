@@ -1,0 +1,119 @@
+/**
+ * Module de validation des données utilisateur
+ * Contient les règles métiers pour l'âge, le code postal, l'identité et l'email
+ * @module validator
+ */
+
+/**
+ * Calcule l'âge précis d'une personne à partir de sa date de naissance
+ * Gère les années bissextiles et le calcul au jour près
+ *
+ * @param {Date} birthDate - La date de naissance
+ * @returns {number} L'âge de la personne
+ * @throws {Error} Si la date est invalide ou dans le futur
+ */
+export function calculateAge(birthDate) {
+    if (!birthDate) throw new Error("Le paramètre date de naissance est requis");
+    if (!(birthDate instanceof Date)) throw new Error("Le format de la date est invalide, Un objet Date est attendu");
+    if (isNaN(birthDate.getTime())) throw new Error("La date fournie n'est pas une date valide");
+
+    const today = new Date();
+    if (birthDate > today) throw new Error("La date de naissance ne peut pas être dans le futur");
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    // Ajustement si l'anniversaire n'est pas encore passé cette année
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    return age;
+}
+
+/**
+ * Vérifie si une personne est majeure
+ * Utilise la fonction calculateAge pour la logique de calcul
+ *
+ * @param {Date} birthDate - La date de naissance
+ * @returns {boolean} True si majeur
+ * @throws {Error} Si mineur ou erreur de date
+ */
+export function isValidAge(birthDate) {
+    // Utilisation de la fonction dédiée (Refactoring demandé)
+    const age = calculateAge(birthDate);
+
+    if (age < 18) throw new Error("Vous devez être majeur");
+    return true;
+}
+
+/**
+ * Valide le format d'un code postal français (5 chiffres)
+ * @param {string} zipCode
+ * @returns {boolean}
+ */
+export function isValidZipCode(zipCode) {
+    if (!zipCode) throw new Error("Le code postal est requis");
+    if (typeof zipCode !== 'string') throw new Error("Le code postal doit être une chaîne de caractères");
+    if (zipCode.length !== 5) throw new Error("Le code postal doit contenir exactement 5 chiffres");
+    if (!/^\d+$/.test(zipCode)) throw new Error("Le code postal ne doit contenir que des chiffres");
+    return true;
+}
+
+/**
+ * Valide un nom/prénom (Lettres, accents, tirets, espaces)
+ * @param {string} name
+ * @returns {boolean}
+ */
+export function isValidName(name) {
+    if (typeof name !== 'string') {
+        if (typeof name === 'number') throw new Error("Le nom doit être une chaîne de caractères");
+        throw new Error("Le nom est requis");
+    }
+    if (name.trim() === '') throw new Error("Le nom est requis");
+
+    const nameRegex = /^[a-zA-ZÀ-ÿ\s-]+$/;
+    if (!nameRegex.test(name)) throw new Error("Le nom ne doit contenir que des lettres, accents, espaces ou tirets");
+    return true;
+}
+
+/**
+ * Valide un email standard
+ * @param {string} email
+ * @returns {boolean}
+ */
+export function isValidEmail(email) {
+    if (!email) throw new Error("L'email est requis");
+    if (typeof email !== 'string') throw new Error("L'email doit être une chaîne de caractères");
+    if (email.trim() === '') throw new Error("L'email est requis"); // Correction pour gérer les espaces vides
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailRegex.test(email)) {
+        throw new Error("L'email doit être valide (ex: user@domain.com)");
+    }
+    return true;
+}
+
+/**
+ * Fonction Globale de Validation de Profil
+ * Utilise tous les validateurs unitaires
+ * Retourne un booléen simple (pas d'exception) pour indiquer si le profil est valide
+ *
+ * @param {Object} profile - L'objet contenant { name, email, birthDate, zipCode }
+ * @returns {boolean} True si TOUT est valide, False sinon
+ */
+export function isValidProfile(profile) {
+    if (!profile || typeof profile !== 'object') return false;
+
+    try {
+        isValidName(profile.name);
+        isValidEmail(profile.email);
+        isValidZipCode(profile.zipCode);
+        // Note: birthDate doit être un objet Date ici
+        isValidAge(profile.birthDate);
+        return true;
+    } catch (error) {
+        // Si une seule validation échoue (throw), on retourne false
+        return false;
+    }
+}
