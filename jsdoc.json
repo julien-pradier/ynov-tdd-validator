@@ -2,7 +2,7 @@
   "source": {
     "include": ["src"],
     "includePattern": ".+\\.js(x)?$",
-    "excludePattern": "(node_modules/|docs|coverage|test.js$)"
+    "excludePattern": "(node_modules/|docs|coverage|\\.test\\.js$)"
   },
   "plugins": ["plugins/markdown"],
   "opts": {
