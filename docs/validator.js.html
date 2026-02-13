@@ -33,52 +33,53 @@
  */
 
 /**
- * Vérifie si une personne est majeure (18 ans ou plus) à la date d'aujourd'hui
- * Effectue un calcul précis au jour près
+ * Calcule l'âge précis d'une personne à partir de sa date de naissance
+ * Gère les années bissextiles et le calcul au jour près
  *
- * @param {Date} birthDate - La date de naissance de la personne à valider
- * @returns {boolean} Retourne true si la personne a 18 ans révolus
- * @throws {Error} Si le paramètre est manquant, n'est pas une Date, est invalide ou dans le futur
- * @throws {Error} Si la personne est mineure (&lt; 18 ans)
- *
- * @example
- * isValidAge(new Date('2000-01-01')); // returns true
+ * @param {Date} birthDate - La date de naissance
+ * @returns {number} L'âge de la personne
+ * @throws {Error} Si la date est invalide ou dans le futur
  */
-
-export function isValidAge(birthDate) {
+export function calculateAge(birthDate) {
     if (!birthDate) throw new Error("Le paramètre date de naissance est requis");
-    if (!(birthDate instanceof Date)) throw new Error("Le format de la date est invalide. Un objet Date est attendu");
+    if (!(birthDate instanceof Date)) throw new Error("Le format de la date est invalide, Un objet Date est attendu");
+    if (isNaN(birthDate.getTime())) throw new Error("La date fournie n'est pas une date valide");
 
     const today = new Date();
-
-    if (isNaN(birthDate.getTime())) throw new Error("La date fournie n'est pas une date valide");
     if (birthDate > today) throw new Error("La date de naissance ne peut pas être dans le futur");
 
     let age = today.getFullYear() - birthDate.getFullYear();
-
     const monthDiff = today.getMonth() - birthDate.getMonth();
 
+    // Ajustement si l'anniversaire n'est pas encore passé cette année
     if (monthDiff &lt; 0 || (monthDiff === 0 &amp;&amp; today.getDate() &lt; birthDate.getDate())) {
         age--;
     }
+
+    return age;
+}
+
+/**
+ * Vérifie si une personne est majeure
+ * Utilise la fonction calculateAge pour la logique de calcul
+ *
+ * @param {Date} birthDate - La date de naissance
+ * @returns {boolean} True si majeur
+ * @throws {Error} Si mineur ou erreur de date
+ */
+export function isValidAge(birthDate) {
+    // Utilisation de la fonction dédiée (Refactoring demandé)
+    const age = calculateAge(birthDate);
 
     if (age &lt; 18) throw new Error("Vous devez être majeur");
     return true;
 }
 
 /**
- * Valide le format d'un code postal français
- * Doit être une chaîne de caractères contenant exactement 5 chiffres
- *
- * @param {string} zipCode - La chaîne représentant le code postal (ex: "75001")
- * @returns {boolean} Retourne true si le format est valide
- * @throws {Error} Si le paramètre est manquant, n'est pas une chaîne, a une mauvaise longueur ou contient des lettres
- *
- * @example
- * isValidZipCode("75001"); // returns true
- * isValidZipCode("06000"); // returns true
+ * Valide le format d'un code postal français (5 chiffres)
+ * @param {string} zipCode
+ * @returns {boolean}
  */
-
 export function isValidZipCode(zipCode) {
     if (!zipCode) throw new Error("Le code postal est requis");
     if (typeof zipCode !== 'string') throw new Error("Le code postal doit être une chaîne de caractères");
@@ -88,24 +89,15 @@ export function isValidZipCode(zipCode) {
 }
 
 /**
- * Valide un nom ou un prénom selon les règles d'identité standard
- * Autorise les lettres, accents, tirets et espaces. Interdit les chiffres et les caractères spéciaux (protection XSS)
- *
- * @param {string} name - Le nom ou prénom à valider
- * @returns {boolean} Retourne true si le nom respecte les critères
- * @throws {Error} Si le nom est vide, n'est pas une chaîne ou contient des caractères interdits
- *
- * @example
- * isValidName("Jean-Pierre"); // returns true
- * isValidName("Noël"); // returns true
+ * Valide un nom/prénom (Lettres, accents, tirets, espaces)
+ * @param {string} name
+ * @returns {boolean}
  */
-
 export function isValidName(name) {
     if (typeof name !== 'string') {
         if (typeof name === 'number') throw new Error("Le nom doit être une chaîne de caractères");
         throw new Error("Le nom est requis");
     }
-
     if (name.trim() === '') throw new Error("Le nom est requis");
 
     const nameRegex = /^[a-zA-ZÀ-ÿ\s-]+$/;
@@ -114,29 +106,44 @@ export function isValidName(name) {
 }
 
 /**
- * Valide le format d'une adresse email standard
- * Vérifie la présence de l'arobase, du domaine et de l'extension
- *
- * @param {string} email - L'adresse email à valider
- * @returns {boolean} Retourne true si le format est valide
- * @throws {Error} Si l'email est vide, n'est pas une chaîne ou a un format incorrect
- *
- * @example
- * isValidEmail("contact@ynov.com"); // returns true
+ * Valide un email standard
+ * @param {string} email
+ * @returns {boolean}
  */
-
 export function isValidEmail(email) {
     if (!email) throw new Error("L'email est requis");
     if (typeof email !== 'string') throw new Error("L'email doit être une chaîne de caractères");
-    if (email.trim() === '') throw new Error("L'email est requis");
+    if (email.trim() === '') throw new Error("L'email est requis"); // Correction pour gérer les espaces vides
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
     if (!emailRegex.test(email)) {
         throw new Error("L'email doit être valide (ex: user@domain.com)");
     }
-
     return true;
+}
+
+/**
+ * Fonction Globale de Validation de Profil
+ * Utilise tous les validateurs unitaires
+ * Retourne un booléen simple (pas d'exception) pour indiquer si le profil est valide
+ *
+ * @param {Object} profile - L'objet contenant { name, email, birthDate, zipCode }
+ * @returns {boolean} True si TOUT est valide, False sinon
+ */
+export function isValidProfile(profile) {
+    if (!profile || typeof profile !== 'object') return false;
+
+    try {
+        isValidName(profile.name);
+        isValidEmail(profile.email);
+        isValidZipCode(profile.zipCode);
+        // Note: birthDate doit être un objet Date ici
+        isValidAge(profile.birthDate);
+        return true;
+    } catch (error) {
+        // Si une seule validation échoue (throw), on retourne false
+        return false;
+    }
 }</code></pre>
         </article>
     </section>
@@ -147,13 +154,13 @@ export function isValidEmail(email) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-validator.html">validator</a></li></ul><h3>Global</h3><ul><li><a href="global.html#calculateAge">calculateAge</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-App.html">App</a></li><li><a href="module-validator.html">validator</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Feb 06 2026 17:18:36 GMT+0100 (heure normale d’Europe centrale)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Feb 13 2026 14:54:45 GMT+0100 (heure normale d’Europe centrale)
 </footer>
 
 <script> prettyPrint(); </script>

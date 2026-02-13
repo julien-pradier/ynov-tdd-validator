@@ -38,8 +38,8 @@
     <div class="container-overview">
     
         
-            <div class="description">Module de validation des données utilisateur
-Contient les règles métiers pour l'âge, le code postal, l'identité et l'email</div>
+            <div class="description"><p>Module de validation des données utilisateur
+Contient les règles métiers pour l'âge, le code postal, l'identité et l'email</p></div>
         
 
         
@@ -145,7 +145,7 @@ Contient les règles métiers pour l'âge, le code postal, l'identité et l'emai
     
 
     
-    <h4 class="name" id=".isValidAge"><span class="type-signature">(static) </span>isValidAge<span class="signature">(birthDate)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    <h4 class="name" id=".calculateAge"><span class="type-signature">(static) </span>calculateAge<span class="signature">(birthDate)</span><span class="type-signature"> &rarr; {number}</span></h4>
     
 
     
@@ -153,8 +153,8 @@ Contient les règles métiers pour l'âge, le code postal, l'identité et l'emai
 
 
 <div class="description">
-    Vérifie si une personne est majeure (18 ans ou plus) à la date d'aujourd'hui
-Effectue un calcul précis au jour près
+    <p>Calcule l'âge précis d'une personne à partir de sa date de naissance
+Gère les années bissextiles et le calcul au jour près</p>
 </div>
 
 
@@ -206,7 +206,7 @@ Effectue un calcul précis au jour près
 
             
 
-            <td class="description last">La date de naissance de la personne à valider</td>
+            <td class="description last"><p>La date de naissance</p></td>
         </tr>
 
     
@@ -247,7 +247,7 @@ Effectue un calcul précis au jour près
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="validator.js.html">validator.js</a>, <a href="validator.js.html#line20">line 20</a>
+        <a href="validator.js.html">validator.js</a>, <a href="validator.js.html#line15">line 15</a>
     </li></ul></dd>
     
 
@@ -271,13 +271,13 @@ Effectue un calcul précis au jour près
 
 
 <h5>Throws:</h5>
-<ul>
-        <li>
+
+        
 
 <dl>
     <dt>
         <div class="param-desc">
-        Si le paramètre est manquant, n'est pas une Date, est invalide ou dans le futur
+        <p>Si la date est invalide ou dans le futur</p>
         </div>
     </dt>
     <dd></dd>
@@ -297,42 +297,204 @@ Effectue un calcul précis au jour près
     <dd></dd>
 </dl>
 
-</li>
+
     
-        <li>
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        Si la personne est mineure (< 18 ans)
-        </div>
-    </dt>
-    <dd></dd>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type">Error</span>
-
-
-            </dd>
-        </dl>
-    </dt>
-    <dd></dd>
-</dl>
-
-</li>
-    </ul>
 
 
 <h5>Returns:</h5>
 
         
 <div class="param-desc">
-    Retourne true si la personne a 18 ans révolus
+    <p>L'âge de la personne</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".isValidAge"><span class="type-signature">(static) </span>isValidAge<span class="signature">(birthDate)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Vérifie si une personne est majeure
+Utilise la fonction calculateAge pour la logique de calcul</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>birthDate</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Date</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>La date de naissance</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="validator.js.html">validator.js</a>, <a href="validator.js.html#line42">line 42</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        <p>Si mineur ou erreur de date</p>
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>True si majeur</p>
 </div>
 
 
@@ -354,11 +516,6 @@ Effectue un calcul précis au jour près
 
 
 
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>isValidAge(new Date('2000-01-01')); // returns true</code></pre>
-
-
 
         
             
@@ -374,8 +531,7 @@ Effectue un calcul précis au jour près
 
 
 <div class="description">
-    Valide le format d'une adresse email standard
-Vérifie la présence de l'arobase, du domaine et de l'extension
+    <p>Valide un email standard</p>
 </div>
 
 
@@ -427,7 +583,7 @@ Vérifie la présence de l'arobase, du domaine et de l'extension
 
             
 
-            <td class="description last">L'adresse email à valider</td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -468,7 +624,7 @@ Vérifie la présence de l'arobase, du domaine et de l'extension
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="validator.js.html">validator.js</a>, <a href="validator.js.html#line100">line 100</a>
+        <a href="validator.js.html">validator.js</a>, <a href="validator.js.html#line85">line 85</a>
     </li></ul></dd>
     
 
@@ -491,44 +647,11 @@ Vérifie la présence de l'arobase, du domaine et de l'extension
 
 
 
-<h5>Throws:</h5>
-
-        
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        Si l'email est vide, n'est pas une chaîne ou a un format incorrect
-        </div>
-    </dt>
-    <dd></dd>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type">Error</span>
-
-
-            </dd>
-        </dl>
-    </dt>
-    <dd></dd>
-</dl>
-
-
-    
 
 
 <h5>Returns:</h5>
 
         
-<div class="param-desc">
-    Retourne true si le format est valide
-</div>
-
 
 
 <dl>
@@ -548,11 +671,6 @@ Vérifie la présence de l'arobase, du domaine et de l'extension
 
 
 
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>isValidEmail("contact@ynov.com"); // returns true</code></pre>
-
-
 
         
             
@@ -568,8 +686,7 @@ Vérifie la présence de l'arobase, du domaine et de l'extension
 
 
 <div class="description">
-    Valide un nom ou un prénom selon les règles d'identité standard
-Autorise les lettres, accents, tirets et espaces. Interdit les chiffres et les caractères spéciaux (protection XSS)
+    <p>Valide un nom/prénom (Lettres, accents, tirets, espaces)</p>
 </div>
 
 
@@ -621,7 +738,7 @@ Autorise les lettres, accents, tirets et espaces. Interdit les chiffres et les c
 
             
 
-            <td class="description last">Le nom ou prénom à valider</td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -662,7 +779,7 @@ Autorise les lettres, accents, tirets et espaces. Interdit les chiffres et les c
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="validator.js.html">validator.js</a>, <a href="validator.js.html#line75">line 75</a>
+        <a href="validator.js.html">validator.js</a>, <a href="validator.js.html#line68">line 68</a>
     </li></ul></dd>
     
 
@@ -685,42 +802,170 @@ Autorise les lettres, accents, tirets et espaces. Interdit les chiffres et les c
 
 
 
-<h5>Throws:</h5>
+
+
+<h5>Returns:</h5>
 
         
 
+
 <dl>
     <dt>
-        <div class="param-desc">
-        Si le nom est vide, n'est pas une chaîne ou contient des caractères interdits
-        </div>
+        Type
     </dt>
-    <dd></dd>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".isValidProfile"><span class="type-signature">(static) </span>isValidProfile<span class="signature">(profile)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Fonction Globale de Validation de Profil
+Utilise tous les validateurs unitaires
+Retourne un booléen simple (pas d'exception) pour indiquer si le profil est valide</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>profile</code></td>
+            
+
+            <td class="type">
+            
                 
-<span class="param-type">Error</span>
+<span class="param-type">Object</span>
 
 
-            </dd>
-        </dl>
-    </dt>
-    <dd></dd>
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>L'objet contenant { name, email, birthDate, zipCode }</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="validator.js.html">validator.js</a>, <a href="validator.js.html#line105">line 105</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
 </dl>
 
 
-    
+
+
+
+
+
+
+
+
+
+
+
 
 
 <h5>Returns:</h5>
 
         
 <div class="param-desc">
-    Retourne true si le nom respecte les critères
+    <p>True si TOUT est valide, False sinon</p>
 </div>
 
 
@@ -742,12 +987,6 @@ Autorise les lettres, accents, tirets et espaces. Interdit les chiffres et les c
 
 
 
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>isValidName("Jean-Pierre"); // returns true
-isValidName("Noël"); // returns true</code></pre>
-
-
 
         
             
@@ -763,8 +1002,7 @@ isValidName("Noël"); // returns true</code></pre>
 
 
 <div class="description">
-    Valide le format d'un code postal français
-Doit être une chaîne de caractères contenant exactement 5 chiffres
+    <p>Valide le format d'un code postal français (5 chiffres)</p>
 </div>
 
 
@@ -816,7 +1054,7 @@ Doit être une chaîne de caractères contenant exactement 5 chiffres
 
             
 
-            <td class="description last">La chaîne représentant le code postal (ex: "75001")</td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -857,7 +1095,7 @@ Doit être une chaîne de caractères contenant exactement 5 chiffres
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="validator.js.html">validator.js</a>, <a href="validator.js.html#line54">line 54</a>
+        <a href="validator.js.html">validator.js</a>, <a href="validator.js.html#line55">line 55</a>
     </li></ul></dd>
     
 
@@ -880,44 +1118,11 @@ Doit être une chaîne de caractères contenant exactement 5 chiffres
 
 
 
-<h5>Throws:</h5>
-
-        
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        Si le paramètre est manquant, n'est pas une chaîne, a une mauvaise longueur ou contient des lettres
-        </div>
-    </dt>
-    <dd></dd>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type">Error</span>
-
-
-            </dd>
-        </dl>
-    </dt>
-    <dd></dd>
-</dl>
-
-
-    
 
 
 <h5>Returns:</h5>
 
         
-<div class="param-desc">
-    Retourne true si le format est valide
-</div>
-
 
 
 <dl>
@@ -937,12 +1142,6 @@ Doit être une chaîne de caractères contenant exactement 5 chiffres
 
 
 
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>isValidZipCode("75001"); // returns true
-isValidZipCode("06000"); // returns true</code></pre>
-
-
 
         
     
@@ -960,13 +1159,13 @@ isValidZipCode("06000"); // returns true</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-validator.html">validator</a></li></ul><h3>Global</h3><ul><li><a href="global.html#calculateAge">calculateAge</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-App.html">App</a></li><li><a href="module-validator.html">validator</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Feb 06 2026 17:18:36 GMT+0100 (heure normale d’Europe centrale)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Feb 13 2026 14:54:45 GMT+0100 (heure normale d’Europe centrale)
 </footer>
 
 <script> prettyPrint(); </script>

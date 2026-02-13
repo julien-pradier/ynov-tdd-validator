@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: App.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: App.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Module principal de l'interface utilisateur pour l'Activité 2.
+ * @module App
+ */
+
+import { useState, useEffect } from 'react';
+import { isValidName, isValidEmail, isValidAge, isValidZipCode } from './validator';
+
+/**
+ * Composant React gérant le formulaire d'inscription.
+ * * Ce composant assure l'intégration de la logique métier de validation[cite: 13, 49],
+ * le feedback visuel immédiat en rouge[cite: 15, 51], la gestion de l'état désactivé
+ * du bouton [cite: 16, 52] et la persistance des données dans le localStorage[cite: 17, 53].
+ *
+ * @component
+ * @returns {JSX.Element} Le formulaire d'inscription complet.
+ */
+export default function App() {
+    const [formData, setFormData] = useState({
+        lastName: '',
+        firstName: '',
+        email: '',
+        birthDate: '',
+        zipCode: '',
+        city: ''
+    });
+
+    const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({});
+    const [showSuccess, setShowSuccess] = useState(false);
+
+    /**
+     * Valide l'intégralité des champs du formulaire en utilisant le module validator.
+     * @function validate
+     * @inner
+     * @param {Object} values - Les données actuelles du formulaire.
+     * @returns {Object} Un objet contenant les messages d'erreur par champ.
+     */
+    const validate = (values) => {
+        const newErrors = {};
+
+        try { isValidName(values.lastName); } catch (e) { newErrors.lastName = e.message; }
+        try { isValidName(values.firstName); } catch (e) { newErrors.firstName = e.message; }
+        try { isValidEmail(values.email); } catch (e) { newErrors.email = e.message; }
+        try { isValidZipCode(values.zipCode); } catch (e) { newErrors.zipCode = e.message; }
+
+        try {
+            if (!values.city) throw new Error("La ville est requise");
+            isValidName(values.city);
+        } catch (e) { newErrors.city = e.message; }
+
+        try {
+            if (!values.birthDate) throw new Error("Date requise");
+            isValidAge(new Date(values.birthDate));
+        } catch (e) { newErrors.birthDate = e.message; }
+
+        return newErrors;
+    };
+
+    /**
+     * Effectue la validation à chaque modification des données du formulaire.
+     */
+    useEffect(() => {
+        const currentErrors = validate(formData);
+        setErrors(currentErrors);
+    }, [formData]);
+
+    /**
+     * Gère la mise à jour des données du formulaire lors de la saisie utilisateur.
+     * @function handleChange
+     * @inner
+     * @param {Object} e - L'événement de changement du DOM.
+     */
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        setShowSuccess(false);
+    };
+
+    /**
+     * Marque un champ comme "touché" lors du focus out pour déclencher l'affichage de l'erreur[cite: 15, 51].
+     * @function handleBlur
+     * @inner
+     * @param {Object} e - L'événement de perte de focus (blur).
+     */
+    const handleBlur = (e) => {
+        const { name } = e.target;
+        setTouched(prev => ({ ...prev, [name]: true }));
+    };
+
+    /**
+     * Traite la soumission, sauvegarde dans localStorage et réinitialise les champs[cite: 17, 53].
+     * @function handleSubmit
+     * @inner
+     * @param {Object} e - L'événement de soumission du formulaire.
+     */
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const currentErrors = validate(formData);
+
+        if (Object.keys(currentErrors).length === 0) {
+            localStorage.setItem('user_data', JSON.stringify(formData));
+            setShowSuccess(true);
+            setFormData({
+                lastName: '',
+                firstName: '',
+                email: '',
+                birthDate: '',
+                zipCode: '',
+                city: ''
+            });
+            setTouched({});
+        }
+    };
+
+    /**
+     * Détermine si le bouton de soumission doit être désactivé[cite: 16, 52].
+     */
+    const isFormInvalid = Object.keys(errors).length > 0 ||
+        Object.values(formData).some(val => val === '');
+
+    return (
+        &lt;div style={{ padding: '20px', maxWidth: '500px', margin: '0 auto' }}>
+            &lt;h1>Inscription&lt;/h1>
+
+            {/* Toaster de succès */}
+            {showSuccess &amp;&amp; (
+                &lt;div style={{ padding: '10px', backgroundColor: '#d4edda', color: '#155724', marginBottom: '15px', borderRadius: '4px' }}>
+                    Formulaire sauvegardé avec succès !
+                &lt;/div>
+            )}
+
+            &lt;form onSubmit={handleSubmit}>
+                {/* Champ Nom */}
+                &lt;div style={{ marginBottom: '15px' }}>
+                    &lt;label htmlFor="lastName">Nom :&lt;/label>
+                    &lt;input
+                        id="lastName"
+                        type="text"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        style={{ display: 'block', width: '100%', padding: '8px' }}
+                    />
+                    {touched.lastName &amp;&amp; errors.lastName &amp;&amp; (
+                        &lt;span style={{ color: 'red', fontSize: '12px' }}>{errors.lastName}&lt;/span>
+                    )}
+                &lt;/div>
+
+                {/* Champ Prénom */}
+                &lt;div style={{ marginBottom: '15px' }}>
+                    &lt;label htmlFor="firstName">Prénom :&lt;/label>
+                    &lt;input
+                        id="firstName"
+                        type="text"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        style={{ display: 'block', width: '100%', padding: '8px' }}
+                    />
+                    {touched.firstName &amp;&amp; errors.firstName &amp;&amp; (
+                        &lt;span style={{ color: 'red', fontSize: '12px' }}>{errors.firstName}&lt;/span>
+                    )}
+                &lt;/div>
+
+                {/* Champ Email */}
+                &lt;div style={{ marginBottom: '15px' }}>
+                    &lt;label htmlFor="email">Email :&lt;/label>
+                    &lt;input
+                        id="email"
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        style={{ display: 'block', width: '100%', padding: '8px' }}
+                    />
+                    {touched.email &amp;&amp; errors.email &amp;&amp; (
+                        &lt;span style={{ color: 'red', fontSize: '12px' }}>{errors.email}&lt;/span>
+                    )}
+                &lt;/div>
+
+                {/* Champ Date de naissance*/}
+                &lt;div style={{ marginBottom: '15px' }}>
+                    &lt;label htmlFor="birthDate">Date de naissance :&lt;/label>
+                    &lt;input
+                        id="birthDate"
+                        type="date"
+                        name="birthDate"
+                        value={formData.birthDate}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        style={{ display: 'block', width: '100%', padding: '8px' }}
+                    />
+                    {touched.birthDate &amp;&amp; errors.birthDate &amp;&amp; (
+                        &lt;span style={{ color: 'red', fontSize: '12px' }}>{errors.birthDate}&lt;/span>
+                    )}
+                &lt;/div>
+
+                {/* Champ Code Postal */}
+                &lt;div style={{ marginBottom: '15px' }}>
+                    &lt;label htmlFor="zipCode">Code Postal :&lt;/label>
+                    &lt;input
+                        id="zipCode"
+                        type="text"
+                        name="zipCode"
+                        value={formData.zipCode}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        style={{ display: 'block', width: '100%', padding: '8px' }}
+                    />
+                    {touched.zipCode &amp;&amp; errors.zipCode &amp;&amp; (
+                        &lt;span style={{ color: 'red', fontSize: '12px' }}>{errors.zipCode}&lt;/span>
+                    )}
+                &lt;/div>
+
+                {/* Champ Ville */}
+                &lt;div style={{ marginBottom: '15px' }}>
+                    &lt;label htmlFor="city">Ville :&lt;/label>
+                    &lt;input
+                        id="city"
+                        type="text"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        style={{ display: 'block', width: '100%', padding: '8px' }}
+                    />
+                    {touched.city &amp;&amp; errors.city &amp;&amp; (
+                        &lt;span style={{ color: 'red', fontSize: '12px' }}>{errors.city}&lt;/span>
+                    )}
+                &lt;/div>
+
+                {/* Bouton de soumission*/}
+                &lt;button
+                    type="submit"
+                    disabled={isFormInvalid}
+                    style={{
+                        padding: '10px 20px',
+                        backgroundColor: isFormInvalid ? '#ccc' : '#007bff',
+                        color: 'white',
+                        border: 'none',
+                        cursor: isFormInvalid ? 'not-allowed' : 'pointer'
+                    }}
+                >
+                    Envoyer
+                &lt;/button>
+            &lt;/form>
+        &lt;/div>
+    );
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-App.html">App</a></li><li><a href="module-validator.html">validator</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Feb 13 2026 14:54:45 GMT+0100 (heure normale d’Europe centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
