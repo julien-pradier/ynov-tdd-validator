@@ -1,70 +1,100 @@
-# Getting Started with Create React App
+# Tests
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Build Status](https://github.com/julien-pradier/ynov-tdd-validator/actions/workflows/build_test_react.yml/badge.svg)
+![Codecov](https://codecov.io/gh/julien-pradier/ynov-tdd-validator/branch/main/graph/badge.svg)
 
-## Available Scripts
+Ce projet est une application React développée selon la méthode **TDD**.
+Il sert de support pour la mise en place d'une chaîne complète d'intégration et de déploiement continu (**CI/CD**).
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🚀 Fonctionnalités CI/CD
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Ce dépôt intègre une automatisation complète via **GitHub Actions** :
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+* **Intégration Continue (CI)** :
+  Installation des dépendances, build de l'application et exécution des tests unitaires à chaque push
 
-### `npm test`
+* **Qualité du Code** :
+  Analyse de la couverture de code et envoi automatique du rapport vers **Codecov**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+* **Documentation** :
+  Génération automatique de la documentation technique (**JSDoc**) incluant ce README.
 
-### `npm run build`
+* **Déploiement Continu (CD)** :
+  Déploiement automatique de l'application et de la documentation sur **GitHub Pages**.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🔗 Liens Utiles
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+* **Application Déployée** :
+  👉 [Voir le site](https://julien-pradier.github.io/ynov-tdd-validator/)
 
-### `npm run eject`
+* **Documentation Technique** :
+  👉 [Voir la JSDoc](https://julien-pradier.github.io/ynov-tdd-validator/docs/)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+* **Rapport Codecov** :
+  👉 [Voir le Dashboard](https://app.codecov.io/gh/julien-pradier/ynov-tdd-validator)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🛠️ Pré-requis
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Pour faire tourner ce projet localement, vous avez besoin de :
 
-## Learn More
+* **Node.js** (version 20.x ou supérieure recommandée)
+* **npm**
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 📦 Installation
 
-### Code Splitting
+Clonez le dépôt et installez les dépendances :
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```bash
+git clone https://github.com/julien-pradier/ynov-tdd-validator.git
+cd ynov-tdd-validator
+npm ci
+```
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## ▶️ Lancer l'application
 
-### Making a Progressive Web App
+Pour démarrer le serveur de développement local :
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```bash
+npm start
+```
 
-### Advanced Configuration
+L'application sera accessible sur :
+👉 [http://localhost:3000](http://localhost:3000)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## 🧪 Lancer les tests
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Pour exécuter la suite de tests unitaires (**Jest / React Testing Library**) :
 
-### `npm run build` fails to minify
+```bash
+npm test
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Pour voir la couverture de code en local :
+
+```bash
+npm test -- --coverage --watchAll=false
+```
+
+---
+
+## 📚 Générer la documentation
+
+Pour générer la JSDoc localement (dans le dossier `public/docs`) :
+
+```bash
+npm run docs
+```
+
+---
