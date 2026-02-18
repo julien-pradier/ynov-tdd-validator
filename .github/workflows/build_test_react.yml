@@ -27,7 +27,7 @@ jobs:
         id: pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-pages-artifact@v3
         with:
           path: build
           if-no-files-found: error
