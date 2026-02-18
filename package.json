@@ -1,5 +1,6 @@
 {
   "name": "my-app",
+  "homepage": "https://julien-pradier.github.io/ynov-tdd-validator/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
