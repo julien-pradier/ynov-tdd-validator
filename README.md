@@ -89,6 +89,18 @@ npm test -- --coverage --watchAll=false
 
 ---
 
+## 🌲 Lancer les tests E2E (Cypress)
+
+Pour exécuter les tests de bout en bout (End-to-End) avec Cypress :
+
+```bash
+npm run cypress
+```
+
+Cela ouvrira l'interface graphique de Cypress où vous pourrez sélectionner et lancer les scénarios de test (ex: `navigation.cy.js`).
+
+---
+
 ## 📚 Générer la documentation
 
 Pour générer la JSDoc localement (dans le dossier `public/docs`) :
