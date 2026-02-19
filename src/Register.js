@@ -72,7 +72,7 @@ export default function Register({ users, setUsers }) {
         <div style={{ padding: '20px', maxWidth: '500px', margin: '0 auto' }}>
             <h1>Inscription</h1>
 
-            <form onSubmit={handleSubmit}>
+            <form data-testid="register-form" onSubmit={handleSubmit}>
                 <div style={{ marginBottom: '15px' }}>
                     <label htmlFor="lastName">Nom :</label>
                     <input id="lastName" type="text" name="lastName" data-cy="input-lastName" value={formData.lastName} onChange={handleChange} onBlur={handleBlur} style={{ display: 'block', width: '100%', padding: '8px' }} />
