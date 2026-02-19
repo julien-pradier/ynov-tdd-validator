@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Register from './Register';
 
-// Mock de react-router-dom
+// Mock de react-router-dom pour simuler useNavigate
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -151,6 +151,7 @@ describe('Integration Tests - Inscription Form', () => {
     const { mockSetUsers } = renderRegister();
 
     // On force la soumission du formulaire directement (bypassing le bouton disabled)
+    // On utilise getByTestId pour éviter l'erreur ESLint 'testing-library/no-node-access'
     const form = screen.getByTestId('register-form');
 
     fireEvent.submit(form);

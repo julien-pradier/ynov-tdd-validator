@@ -1,7 +1,24 @@
+/**
+ * @module Register
+ * @description Page d'inscription de l'application.
+ * Contient le formulaire d'inscription avec validation en temps réel et gestion des erreurs.
+ */
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isValidName, isValidEmail, isValidAge, isValidZipCode } from './validator';
 
+/**
+ * Composant Register.
+ * Gère le formulaire d'inscription, la validation des champs, l'affichage des erreurs et la soumission.
+ * Redirige vers la page d'accueil après une inscription réussie.
+ *
+ * @component
+ * @param {Object} props - Les propriétés du composant.
+ * @param {Array<Object>} props.users - La liste actuelle des utilisateurs (pour l'ajout).
+ * @param {Function} props.setUsers - Fonction pour mettre à jour la liste des utilisateurs.
+ * @returns {JSX.Element} Le formulaire d'inscription rendu.
+ */
 export default function Register({ users, setUsers }) {
     const navigate = useNavigate(); // Hook pour la redirection
 
@@ -17,6 +34,13 @@ export default function Register({ users, setUsers }) {
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
 
+    /**
+     * Valide l'intégralité des champs du formulaire en utilisant le module validator.
+     * @function validate
+     * @inner
+     * @param {Object} values - Les données actuelles du formulaire.
+     * @returns {Object} Un objet contenant les messages d'erreur par champ.
+     */
     const validate = (values) => {
         const newErrors = {};
         try { isValidName(values.lastName); } catch (e) { newErrors.lastName = e.message; }
@@ -37,21 +61,42 @@ export default function Register({ users, setUsers }) {
         return newErrors;
     };
 
+    /**
+     * Effectue la validation à chaque modification des données du formulaire.
+     */
     useEffect(() => {
         const currentErrors = validate(formData);
         setErrors(currentErrors);
     }, [formData]);
 
+    /**
+     * Gère la mise à jour des données du formulaire lors de la saisie utilisateur.
+     * @function handleChange
+     * @inner
+     * @param {Object} e - L'événement de changement du DOM.
+     */
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    /**
+     * Marque un champ comme "touché" lors du focus out pour déclencher l'affichage de l'erreur
+     * @function handleBlur
+     * @inner
+     * @param {Object} e - L'événement de perte de focus (blur).
+     */
     const handleBlur = (e) => {
         const { name } = e.target;
         setTouched(prev => ({ ...prev, [name]: true }));
     };
 
+    /**
+     * Traite la soumission, ajoute l'utilisateur et redirige vers l'accueil.
+     * @function handleSubmit
+     * @inner
+     * @param {Object} e - L'événement de soumission du formulaire.
+     */
     const handleSubmit = (e) => {
         e.preventDefault();
         const currentErrors = validate(formData);

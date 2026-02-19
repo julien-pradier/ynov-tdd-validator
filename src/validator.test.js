@@ -4,7 +4,6 @@ import { calculateAge, isValidAge, isValidZipCode, isValidName, isValidEmail, is
 // 1. CALCULATE AGE (La logique pure)
 // ==========================================
 describe('Validator - calculateAge (Unit)', () => {
-    // Cas passants
     it('doit calculer l\'âge correct (anniversaire passé)', () => {
         const today = new Date();
         const birth = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate());
@@ -61,7 +60,6 @@ describe('Validator - isValidAge', () => {
 // 3. ZIP CODE VALIDATION
 // ==========================================
 describe('Validator - isValidZipCode', () => {
-    // Cas passant
     it('doit valider un code postal correct', () => {
         expect(isValidZipCode("75001")).toBe(true);
     });
@@ -89,7 +87,6 @@ describe('Validator - isValidZipCode', () => {
 // 4. NAME VALIDATION
 // ==========================================
 describe('Validator - isValidName', () => {
-    // Cas passant
     it('doit valider un nom correct', () => {
         expect(isValidName("Jean-Pierre")).toBe(true);
     });
@@ -118,7 +115,6 @@ describe('Validator - isValidName', () => {
 // 5. EMAIL VALIDATION
 // ==========================================
 describe('Validator - isValidEmail', () => {
-    // Cas passant
     it('doit valider un email correct', () => {
         expect(isValidEmail("test@ynov.com")).toBe(true);
     });
