@@ -2,6 +2,7 @@
 
 ![Build Status](https://github.com/julien-pradier/ynov-tdd-validator/actions/workflows/build_test_react.yml/badge.svg)
 ![Codecov](https://codecov.io/gh/julien-pradier/ynov-tdd-validator/branch/main/graph/badge.svg)
+![Cypress](https://img.shields.io/badge/tested%20with-Cypress-04C38E.svg)
 
 Ce projet est une application React développée selon la méthode **TDD**.
 Il sert de support pour la mise en place d'une chaîne complète d'intégration et de déploiement continu (**CI/CD**).
