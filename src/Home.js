@@ -6,10 +6,8 @@ export default function Home({ users }) {
         <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
             <h1>Bienvenue sur notre application</h1>
 
-            {/* Le compteur exact demandé par le prof et Cypress */}
             <h2 data-cy="counter">{users.length} utilisateur(s) inscrit(s)</h2>
 
-            {/* La liste des inscrits */}
             {users.length > 0 && (
                 <ul data-cy="user-list" style={{ listStyleType: 'none', padding: 0 }}>
                     {users.map((user, index) => (

@@ -4,13 +4,11 @@ import Home from './Home';
 import Register from './Register';
 
 export default function App() {
-    // L'état stocke désormais un TABLEAU d'utilisateurs
     const [users, setUsers] = useState(() => {
         const saved = localStorage.getItem('users');
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-                // On s'assure que c'est bien un tableau (au cas où votre ancien localStorage stockait un objet simple)
                 return Array.isArray(parsed) ? parsed : [];
             } catch (e) {
                 return [];
@@ -24,8 +22,11 @@ export default function App() {
         localStorage.setItem('users', JSON.stringify(users));
     }, [users]);
 
+    // On récupère le basename depuis la variable d'environnement PUBLIC_URL
+    const basename = process.env.PUBLIC_URL || '/';
+
     return (
-        <Router>
+        <Router basename={basename}>
             <div className="App">
                 <Routes>
                     {/* Page d'Accueil */}
