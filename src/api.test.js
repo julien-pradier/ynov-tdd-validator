@@ -1,45 +1,83 @@
-import { registerUserAPI } from './api';
+import { registerUserAPI, getUsersAPI } from './api';
 import axios from 'axios';
 
 // On simule (mock) intégralement la librairie axios pour ne pas faire de vrais appels réseau
 jest.mock('axios');
 
-describe('Service API - registerUserAPI', () => {
+describe('Service API', () => {
     afterEach(() => {
-        jest.clearAllMocks(); // Réinitialise les compteurs entre chaque test
+        jest.clearAllMocks();
     });
 
-    it('doit appeler axios.post et retourner les données en cas de succès', async () => {
-        // 1. Préparation des fausses données
-        const mockUserData = { firstName: 'Julien', lastName: 'Pradier' };
-        const mockApiResponse = { data: { id: 11, ...mockUserData } };
+    // ==========================================
+    // TESTS POUR LE POST (Inscription)
+    // ==========================================
+    describe('registerUserAPI (POST)', () => {
+        it('doit appeler axios.post et retourner les données en cas de succès', async () => {
+            // 1. Préparation des fausses données
+            const mockUserData = { firstName: 'Julien', lastName: 'Pradier' };
+            const mockApiResponse = { data: { id: 11, ...mockUserData } };
 
-        // 2. Configuration du Mock pour simuler une réponse 200 OK du serveur
-        axios.post.mockResolvedValueOnce(mockApiResponse);
+            // 2. Configuration du Mock pour simuler une réponse 200 OK du serveur
+            axios.post.mockResolvedValueOnce(mockApiResponse);
 
-        // 3. Exécution de la fonction
-        const result = await registerUserAPI(mockUserData);
+            // 3. Exécution de la fonction
+            const result = await registerUserAPI(mockUserData);
 
-        // 4. Vérifications (Assertions)
-        expect(axios.post).toHaveBeenCalledWith('https://jsonplaceholder.typicode.com/users', mockUserData);
-        expect(axios.post).toHaveBeenCalledTimes(1);
-        expect(result).toEqual(mockApiResponse.data);
+            // 4. Vérifications
+            expect(axios.post).toHaveBeenCalledWith('https://jsonplaceholder.typicode.com/users', mockUserData);
+            expect(axios.post).toHaveBeenCalledTimes(1);
+            expect(result).toEqual(mockApiResponse.data);
+        });
+
+        it("doit lever une exception si l'API renvoie une erreur (ex: Network Error)", async () => {
+            const mockUserData = { firstName: 'Julien', lastName: 'Pradier' };
+            const networkError = new Error('Network Error');
+
+            // Pour garder la console propre pendant les tests, on masque l'erreur prévue
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+            // Configuration du Mock pour simuler une erreur
+            axios.post.mockRejectedValueOnce(networkError);
+
+            // On vérifie que notre fonction laisse bien remonter l'erreur
+            await expect(registerUserAPI(mockUserData)).rejects.toThrow('Network Error');
+
+            // On restaure le comportement normal de la console
+            consoleSpy.mockRestore();
+        });
     });
 
-    it("doit lever une exception si l'API renvoie une erreur (ex: Network Error)", async () => {
-        const mockUserData = { firstName: 'Julien', lastName: 'Pradier' };
-        const networkError = new Error('Network Error');
+    // ==========================================
+    // TESTS POUR LE GET (Récupération liste)
+    // ==========================================
+    describe('getUsersAPI (GET)', () => {
+        it('doit appeler axios.get et retourner la liste des utilisateurs', async () => {
+            const mockUsers = [
+                { id: 1, name: 'John Doe', email: 'john@test.com' },
+                { id: 2, name: 'Jane Doe', email: 'jane@test.com' }
+            ];
 
-        // Pour garder la console propre pendant les tests, on masque l'erreur prévue
-        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+            // On mocke la réponse de axios.get
+            axios.get.mockResolvedValueOnce({ data: mockUsers });
 
-        // Configuration du Mock pour simuler une erreur (rejet de la promesse)
-        axios.post.mockRejectedValueOnce(networkError);
+            const result = await getUsersAPI();
 
-        // On vérifie que notre fonction laisse bien remonter l'erreur
-        await expect(registerUserAPI(mockUserData)).rejects.toThrow('Network Error');
+            expect(axios.get).toHaveBeenCalledWith('https://jsonplaceholder.typicode.com/users');
+            expect(axios.get).toHaveBeenCalledTimes(1);
+            expect(result).toEqual(mockUsers);
+        });
 
-        // On restaure le comportement normal de la console
-        consoleSpy.mockRestore();
+        it("doit lever une exception si la récupération échoue", async () => {
+            const networkError = new Error('Network Error');
+
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+            axios.get.mockRejectedValueOnce(networkError);
+
+            await expect(getUsersAPI()).rejects.toThrow('Network Error');
+
+            consoleSpy.mockRestore();
+        });
     });
 });
