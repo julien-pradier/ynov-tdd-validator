@@ -1,41 +1,41 @@
 /**
  * @module App
  * @description Composant racine de l'application.
- * Gère le routing (navigation) entre les pages et la persistance des données utilisateurs.
+ * Gère le routing (navigation) entre les pages et la récupération des données via API.
  */
 
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './Home';
 import Register from './Register';
+import { getUsersAPI } from './api';
 
 /**
  * Composant principal de l'application.
- * Initialise l'état des utilisateurs depuis le localStorage et configure les routes.
- *
- * @component
- * @returns {JSX.Element} L'application React avec le Router et les Routes configurées.
+ * Initialise l'état des utilisateurs depuis l'API et configure les routes.
  */
 export default function App() {
-    // L'état stocke désormais un TABLEAU d'utilisateurs
-    const [users, setUsers] = useState(() => {
-        const saved = localStorage.getItem('users');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                // On s'assure que c'est bien un tableau (au cas où votre ancien localStorage stockait un objet simple)
-                return Array.isArray(parsed) ? parsed : [];
-            } catch (e) {
-                return [];
-            }
-        }
-        return [];
-    });
+    const [users, setUsers] = useState([]);
 
-    // Sauvegarde automatique à chaque ajout d'utilisateur
     useEffect(() => {
-        localStorage.setItem('users', JSON.stringify(users));
-    }, [users]);
+        const fetchInitialUsers = async () => {
+            try {
+                const apiUsers = await getUsersAPI();
+                // JSONPlaceholder renvoie { name: "Leanne Graham" }. On l'adapte à notre format.
+                const formattedUsers = apiUsers.map(user => ({
+                    firstName: user.name.split(' ')[0],
+                    lastName: user.name.split(' ')[1] || '',
+                    email: user.email
+                }));
+                setUsers(formattedUsers);
+            } catch (error) {
+                console.error("Erreur lors de la récupération des utilisateurs", error);
+                setUsers([]); // On s'assure d'avoir un tableau vide si l'API plante
+            }
+        };
+
+        fetchInitialUsers();
+    }, []);
 
     const basename = process.env.PUBLIC_URL || '/';
 
@@ -43,10 +43,7 @@ export default function App() {
         <Router basename={basename}>
             <div className="App">
                 <Routes>
-                    {/* Page d'Accueil */}
                     <Route path="/" element={<Home users={users} />} />
-
-                    {/* Page Formulaire */}
                     <Route path="/register" element={<Register users={users} setUsers={setUsers} />} />
                 </Routes>
             </div>

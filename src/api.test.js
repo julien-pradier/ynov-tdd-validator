@@ -15,7 +15,7 @@ describe('Service API', () => {
     describe('registerUserAPI (POST)', () => {
         it('doit appeler axios.post et retourner les données en cas de succès', async () => {
             // 1. Préparation des fausses données
-            const mockUserData = { firstName: 'Julien', lastName: 'Pradier' };
+            const mockUserData = { firstName: 'Dupont', lastName: 'Dupond' };
             const mockApiResponse = { data: { id: 11, ...mockUserData } };
 
             // 2. Configuration du Mock pour simuler une réponse 200 OK du serveur
@@ -58,7 +58,6 @@ describe('Service API', () => {
                 { id: 2, name: 'Jane Doe', email: 'jane@test.com' }
             ];
 
-            // On mocke la réponse de axios.get
             axios.get.mockResolvedValueOnce({ data: mockUsers });
 
             const result = await getUsersAPI();
