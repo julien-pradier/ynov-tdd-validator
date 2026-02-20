@@ -10,6 +10,10 @@ jobs:
     strategy:
       matrix:
         node_version: [21.x]
+    
+    env:
+      REACT_APP_API_TOKEN: ${{ secrets.JSONPLACEHOLDER_TOKEN }}
+
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
