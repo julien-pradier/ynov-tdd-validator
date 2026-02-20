@@ -21,7 +21,7 @@ import { registerUserAPI } from './api';
  * @returns {JSX.Element} Le formulaire d'inscription rendu.
  */
 export default function Register({ users, setUsers }) {
-    const navigate = useNavigate(); // Hook pour la redirection
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         lastName: '',
@@ -34,7 +34,7 @@ export default function Register({ users, setUsers }) {
 
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
-    const [apiError, setApiError] = useState(''); // NOUVEAU : État pour gérer l'erreur de l'API
+    const [apiError, setApiError] = useState('');
 
     /**
      * Valide l'intégralité des champs du formulaire en utilisant le module validator.
@@ -101,23 +101,25 @@ export default function Register({ users, setUsers }) {
      */
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setApiError(''); // On réinitialise l'erreur API au moment de soumettre
+        setApiError('');
 
         const currentErrors = validate(formData);
 
         if (Object.keys(currentErrors).length === 0) {
             try {
-                // NOUVEAU : Appel à l'API au lieu d'une mise à jour locale directe
                 const newUser = await registerUserAPI(formData);
-
-                // On ajoute le nouvel utilisateur retourné par l'API au tableau existant
                 setUsers([...users, newUser]);
-
-                // On redirige automatiquement vers la page d'accueil !
                 navigate('/');
             } catch (error) {
                 console.error("Erreur d'inscription:", error);
-                setApiError('Une erreur réseau est survenue. Veuillez réessayer.');
+
+                // --- GESTION DE L'ERREUR MÉTIER 400 ---
+                if (error.response && error.response.status === 400) {
+                    setApiError("Cet email existe déjà.");
+                } else {
+                    // Pour toutes les autres erreurs (ex: 500 Crash Serveur)
+                    setApiError('Une erreur réseau est survenue. Veuillez réessayer.');
+                }
             }
         }
     };
@@ -129,7 +131,7 @@ export default function Register({ users, setUsers }) {
         <div style={{ padding: '20px', maxWidth: '500px', margin: '0 auto' }}>
             <h1>Inscription</h1>
 
-            {/* NOUVEAU : Affichage des erreurs réseau si l'API échoue */}
+            {/* Affichage des erreurs réseau ou métier si l'API échoue */}
             {apiError && (
                 <div style={{ color: 'white', backgroundColor: '#dc3545', padding: '10px', borderRadius: '5px', marginBottom: '15px' }}>
                     {apiError}

@@ -9,7 +9,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-// Mock du module API que l'on vient de créer pour isoler le composant du réseau
+// Mock du module API pour isoler le composant du réseau
 jest.mock('./api');
 
 beforeEach(() => {
@@ -17,7 +17,6 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-// Helper pour rendre le composant avec les props par défaut
 const renderRegister = () => {
   const mockSetUsers = jest.fn();
   const mockUsers = [];
@@ -48,7 +47,6 @@ describe('Integration Tests - Inscription Form', () => {
     const { mockSetUsers, mockUsers } = renderRegister();
     const majorYear = new Date().getFullYear() - 20;
 
-    // Remplissage du formulaire
     fireEvent.change(screen.getByLabelText(/^Nom :/i), { target: { value: 'Doe' } });
     fireEvent.change(screen.getByLabelText(/Prénom :/i), { target: { value: 'John' } });
     fireEvent.change(screen.getByLabelText(/Email :/i), { target: { value: 'john.doe@test.com' } });
@@ -60,7 +58,6 @@ describe('Integration Tests - Inscription Form', () => {
 
     await waitFor(() => expect(submitButton).toBeEnabled());
 
-    // Configuration de la réponse simulée de l'API (Mock)
     const mockApiResponse = {
       id: 11,
       lastName: 'Doe',
@@ -72,10 +69,8 @@ describe('Integration Tests - Inscription Form', () => {
     };
     registerUserAPI.mockResolvedValueOnce(mockApiResponse);
 
-    // FIX : On déclenche l'événement "submit" directement sur le formulaire via son testId
     fireEvent.submit(screen.getByTestId('register-form'));
 
-    // 1. On vérifie que notre fausse API a bien été appelée
     await waitFor(() => {
       expect(registerUserAPI).toHaveBeenCalledTimes(1);
     });
@@ -89,21 +84,18 @@ describe('Integration Tests - Inscription Form', () => {
       city: 'Paris'
     });
 
-    // 2. On attend et on vérifie que setUsers a été appelé avec les données retournées par l'API
     await waitFor(() => {
       expect(mockSetUsers).toHaveBeenCalledTimes(1);
     });
     expect(mockSetUsers).toHaveBeenCalledWith([...mockUsers, mockApiResponse]);
 
-    // 3. Vérification de la redirection vers l'accueil
     expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 
-  test('Affiche une erreur si l\'API échoue', async () => {
+  test('Affiche une erreur réseau générale si l\'API échoue (Erreur 500)', async () => {
     const { mockSetUsers } = renderRegister();
     const majorYear = new Date().getFullYear() - 20;
 
-    // Remplissage du formulaire
     fireEvent.change(screen.getByLabelText(/^Nom :/i), { target: { value: 'Doe' } });
     fireEvent.change(screen.getByLabelText(/Prénom :/i), { target: { value: 'John' } });
     fireEvent.change(screen.getByLabelText(/Email :/i), { target: { value: 'john.doe@test.com' } });
@@ -112,25 +104,55 @@ describe('Integration Tests - Inscription Form', () => {
     fireEvent.change(screen.getByLabelText(/Ville :/i), { target: { value: 'Paris' } });
 
     const submitButton = screen.getByRole('button', { name: /Envoyer/i });
-
     await waitFor(() => expect(submitButton).toBeEnabled());
 
-    // Simulation d'une erreur API
     registerUserAPI.mockRejectedValueOnce(new Error('Network Error'));
 
     fireEvent.submit(screen.getByTestId('register-form'));
 
-    // On attend que l'API soit appelée
     await waitFor(() => {
       expect(registerUserAPI).toHaveBeenCalledTimes(1);
     });
 
-    // On vérifie que le message d'erreur s'affiche pour l'utilisateur
     await waitFor(() => {
       expect(screen.getByText('Une erreur réseau est survenue. Veuillez réessayer.')).toBeInTheDocument();
     });
 
-    // On s'assure que setUsers n'a pas été appelé
+    expect(mockSetUsers).not.toHaveBeenCalled();
+  });
+
+  test('Affiche une erreur spécifique si l\'email existe déjà (Erreur Métier 400)', async () => {
+    const { mockSetUsers } = renderRegister();
+    const majorYear = new Date().getFullYear() - 20;
+
+    fireEvent.change(screen.getByLabelText(/^Nom :/i), { target: { value: 'Doe' } });
+    fireEvent.change(screen.getByLabelText(/Prénom :/i), { target: { value: 'John' } });
+    fireEvent.change(screen.getByLabelText(/Email :/i), { target: { value: 'existant@test.com' } });
+    fireEvent.change(screen.getByLabelText(/Date de naissance :/i), { target: { value: `${majorYear}-01-01` } });
+    fireEvent.change(screen.getByLabelText(/Code Postal :/i), { target: { value: '75001' } });
+    fireEvent.change(screen.getByLabelText(/Ville :/i), { target: { value: 'Paris' } });
+
+    const submitButton = screen.getByRole('button', { name: /Envoyer/i });
+    await waitFor(() => expect(submitButton).toBeEnabled());
+
+    const mockError400 = {
+      response: {
+        status: 400,
+        data: { message: "Email already exists" }
+      }
+    };
+    registerUserAPI.mockRejectedValueOnce(mockError400);
+
+    fireEvent.submit(screen.getByTestId('register-form'));
+
+    await waitFor(() => {
+      expect(registerUserAPI).toHaveBeenCalledTimes(1);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Cet email existe déjà.')).toBeInTheDocument();
+    });
+
     expect(mockSetUsers).not.toHaveBeenCalled();
   });
 
@@ -150,9 +172,13 @@ describe('Integration Tests - Inscription Form', () => {
       fireEvent.blur(input);
     });
 
+
     await waitFor(() => {
-      const errorSpans = document.querySelectorAll('span[data-cy^="error-"]');
-      expect(errorSpans.length).toBeGreaterThan(0);
+      expect(screen.getByText("La ville est requise")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Date requise")).toBeInTheDocument();
     });
   });
 
