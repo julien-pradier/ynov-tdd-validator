@@ -7,6 +7,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isValidName, isValidEmail, isValidAge, isValidZipCode } from './validator';
+import { registerUserAPI } from './api';
 
 /**
  * Composant Register.
@@ -33,6 +34,7 @@ export default function Register({ users, setUsers }) {
 
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
+    const [apiError, setApiError] = useState(''); // NOUVEAU : État pour gérer l'erreur de l'API
 
     /**
      * Valide l'intégralité des champs du formulaire en utilisant le module validator.
@@ -97,16 +99,26 @@ export default function Register({ users, setUsers }) {
      * @inner
      * @param {Object} e - L'événement de soumission du formulaire.
      */
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setApiError(''); // On réinitialise l'erreur API au moment de soumettre
+
         const currentErrors = validate(formData);
 
         if (Object.keys(currentErrors).length === 0) {
-            // On ajoute le nouvel utilisateur au tableau existant
-            setUsers([...users, formData]);
+            try {
+                // NOUVEAU : Appel à l'API au lieu d'une mise à jour locale directe
+                const newUser = await registerUserAPI(formData);
 
-            // On redirige automatiquement vers la page d'accueil !
-            navigate('/');
+                // On ajoute le nouvel utilisateur retourné par l'API au tableau existant
+                setUsers([...users, newUser]);
+
+                // On redirige automatiquement vers la page d'accueil !
+                navigate('/');
+            } catch (error) {
+                console.error("Erreur d'inscription:", error);
+                setApiError('Une erreur réseau est survenue. Veuillez réessayer.');
+            }
         }
     };
 
@@ -116,6 +128,13 @@ export default function Register({ users, setUsers }) {
     return (
         <div style={{ padding: '20px', maxWidth: '500px', margin: '0 auto' }}>
             <h1>Inscription</h1>
+
+            {/* NOUVEAU : Affichage des erreurs réseau si l'API échoue */}
+            {apiError && (
+                <div style={{ color: 'white', backgroundColor: '#dc3545', padding: '10px', borderRadius: '5px', marginBottom: '15px' }}>
+                    {apiError}
+                </div>
+            )}
 
             <form data-testid="register-form" onSubmit={handleSubmit}>
                 <div style={{ marginBottom: '15px' }}>

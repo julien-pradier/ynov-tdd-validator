@@ -37,8 +37,6 @@ export default function App() {
         localStorage.setItem('users', JSON.stringify(users));
     }, [users]);
 
-    // On récupère le basename depuis la variable d'environnement PUBLIC_URL
-    // En local, PUBLIC_URL est vide (ou '/'). Sur GitHub Pages, c'est '/ynov-tdd-validator'
     const basename = process.env.PUBLIC_URL || '/';
 
     return (
