@@ -30,7 +30,7 @@ export default function App() {
                 setUsers(formattedUsers);
             } catch (error) {
                 console.error("Erreur lors de la récupération des utilisateurs", error);
-                setUsers([]); // On s'assure d'avoir un tableau vide si l'API plante
+                setUsers([]);
             }
         };
 

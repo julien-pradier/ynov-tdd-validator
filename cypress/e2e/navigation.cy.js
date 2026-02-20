@@ -20,12 +20,13 @@ describe('Navigation et gestion des inscriptions (E2E)', () => {
     cy.contains("Aller s'inscrire").click();
     cy.url().should('include', '/register');
 
-    // On intercepte le POST de création
+    // CORRECTION DU MOCK : On renvoie firstName et lastName pour correspondre à l'état React
     cy.intercept('POST', '**/users', {
       statusCode: 201,
       body: {
         id: 11,
-        name: 'Jean Dupont',
+        firstName: 'Jean',
+        lastName: 'Dupont',
         email: 'jean.dupont@test.com'
       }
     }).as('apiRegister');
@@ -53,6 +54,7 @@ describe('Navigation et gestion des inscriptions (E2E)', () => {
   // ==========================================
   it('Scénario d\'Erreur : Tentative d\'ajout invalide (Validation Frontend)', () => {
 
+    // Ici le mock GET utilise 'name' car App.js le split automatiquement au montage
     cy.intercept('GET', '**/users', {
       statusCode: 200,
       body: [{
