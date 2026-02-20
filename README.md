@@ -111,3 +111,36 @@ npm run docs
 ```
 
 ---
+
+## 📡 Stratégie de Mocking
+
+Dans ce projet, les appels réseaux (via **Axios**) sont isolés dans le
+module `api.js`
+
+### Tests d'intégration (Jest)
+
+Nous utilisons :
+
+``` javascript
+jest.mock('axios')
+```
+
+Cela permet de simuler les réponses de l'API et de valider le
+comportement du frontend face à différents scénarios :
+
+-   Succès (Code 200/201)
+-   Erreur Métier (Code 400 - ex: Email déjà existant)
+-   Crash Serveur (Code 500)
+
+### Tests E2E (Cypress)
+
+Nous utilisons :
+
+``` javascript
+cy.intercept()
+```
+
+Cette approche garantit que les tests de navigation sont stables,
+rapides et indépendants de l'état réel de l'API externe
+(JSONPlaceholder).
+
