@@ -7,21 +7,18 @@ on:
 jobs:
   build_test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node_version: [21.x]
-    
     env:
+      CI: true
       REACT_APP_API_TOKEN: ${{ secrets.JSONPLACEHOLDER_TOKEN }}
 
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node_version }}
+      - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node_version }}
+          node-version: 21.x
 
       - name: npm ci, build and test
         run: |
@@ -33,17 +30,12 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          build: npm run build
           start: npm start
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v3
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -73,23 +65,26 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # 1. Récupération des informations du package.json
+          npm install -g semver
+
           PACKAGE_NAME=$(node -p "require('./package.json').name")
           LOCAL_VERSION=$(node -p "require('./package.json').version")
-          
-          # Récupération de la version en ligne sur NPM (ou 0.0.0 si le package n'existe pas encore)
           NPM_VERSION=$(npm view $PACKAGE_NAME version 2>/dev/null || echo "0.0.0")
-          
-          echo "Package : $PACKAGE_NAME"
+
+          echo "Package      : $PACKAGE_NAME"
           echo "Version locale : $LOCAL_VERSION"
-          echo "Version NPM : $NPM_VERSION"
-          
-          # 2. Comparaison stricte des versions (Bypass)
-          if [ "$(npx semver $LOCAL_VERSION -g $NPM_VERSION)" = "$LOCAL_VERSION" ]; then
-            echo "La version locale ($LOCAL_VERSION) est strictement supérieure à la version NPM ($NPM_VERSION). Publication en cours..."
+          echo "Version NPM    : $NPM_VERSION"
+
+          # ✅ Fix principal : syntaxe corrigée avec -r ">version"
+          # semver retourne la version si elle satisfait le range, sinon chaîne vide
+          IS_NEWER=$(semver "$LOCAL_VERSION" -r ">$NPM_VERSION" || echo "")
+          echo "Résultat comparaison (IS_NEWER) : '$IS_NEWER'"
+
+          if [ -n "$IS_NEWER" ]; then
+            echo "Version locale ($LOCAL_VERSION) > NPM ($NPM_VERSION). Publication..."
             npm publish
           else
-            echo "Aucune nouvelle version détectée. L'étape de publication est skippée."
+            echo "Pas de nouvelle version ($LOCAL_VERSION <= $NPM_VERSION). Publication skippée."
           fi
 
   deploy:
@@ -102,6 +97,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
