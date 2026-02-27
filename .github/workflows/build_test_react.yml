@@ -75,8 +75,6 @@ jobs:
           echo "Version locale : $LOCAL_VERSION"
           echo "Version NPM    : $NPM_VERSION"
 
-          # ✅ Fix principal : syntaxe corrigée avec -r ">version"
-          # semver retourne la version si elle satisfait le range, sinon chaîne vide
           IS_NEWER=$(semver "$LOCAL_VERSION" -r ">$NPM_VERSION" || echo "")
           echo "Résultat comparaison (IS_NEWER) : '$IS_NEWER'"
 
