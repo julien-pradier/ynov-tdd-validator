@@ -3,6 +3,7 @@
 ![Build Status](https://github.com/julien-pradier/ynov-tdd-validator/actions/workflows/build_test_react.yml/badge.svg)
 ![Codecov](https://codecov.io/gh/julien-pradier/ynov-tdd-validator/branch/main/graph/badge.svg)
 ![Cypress](https://img.shields.io/badge/tested%20with-Cypress-04C38E.svg)
+[![NPM Version](https://img.shields.io/npm/v/ci-cd-ynov-julien-pradier.svg)](https://www.npmjs.com/package/ci-cd-ynov-julien-pradier)
 
 Ce projet est une application React développée selon la méthode **TDD**.
 Il sert de support pour la mise en place d'une chaîne complète d'intégration et de déploiement continu (**CI/CD**).
@@ -37,6 +38,9 @@ Ce dépôt intègre une automatisation complète via **GitHub Actions** :
 
 * **Rapport Codecov** :
   👉 [Voir le Dashboard](https://app.codecov.io/gh/julien-pradier/ynov-tdd-validator)
+
+* **Package NPM** :
+  👉 [Voir sur NPM](https://www.npmjs.com/package/ci-cd-ynov-julien-pradier)
 
 ---
 
@@ -143,4 +147,3 @@ cy.intercept()
 Cette approche garantit que les tests de navigation sont stables,
 rapides et indépendants de l'état réel de l'API externe
 (JSONPlaceholder).
-
