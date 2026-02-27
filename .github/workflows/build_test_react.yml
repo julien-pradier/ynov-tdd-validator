@@ -16,10 +16,10 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Use Node.js ${{ matrix.node_version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node_version }}
 
@@ -50,8 +50,50 @@ jobs:
         with:
           path: build
 
-  deploy:
+  publish-npm:
     needs: build_test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 21.x
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Build package
+        run: npm run build-npm
+
+      - name: Logique de Bypass et Publication NPM
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # 1. Récupération des informations du package.json
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+          
+          # Récupération de la version en ligne sur NPM (ou 0.0.0 si le package n'existe pas encore)
+          NPM_VERSION=$(npm view $PACKAGE_NAME version 2>/dev/null || echo "0.0.0")
+          
+          echo "Package : $PACKAGE_NAME"
+          echo "Version locale : $LOCAL_VERSION"
+          echo "Version NPM : $NPM_VERSION"
+          
+          # 2. Comparaison stricte des versions (Bypass)
+          if [ "$(npx semver $LOCAL_VERSION -g $NPM_VERSION)" = "$LOCAL_VERSION" ]; then
+            echo "La version locale ($LOCAL_VERSION) est strictement supérieure à la version NPM ($NPM_VERSION). Publication en cours..."
+            npm publish
+          else
+            echo "Aucune nouvelle version détectée. L'étape de publication est skippée."
+          fi
+
+  deploy:
+    needs: publish-npm
     permissions:
       pages: write
       id-token: write
@@ -63,34 +105,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-  publish_npm:
-    needs: build_test
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v2
-
-      - name: Use Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 21.x
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Installer les dépendances
-        run: npm ci
-
-      - name: build and publish package on NPM
-        run: |
-          git config --global user.email "julien.pradier@ynov.com"
-          git config --global user.name "Julien Pradier"
-          npm run build-npm
-          npm version patch
-          npm publish
-          git add .
-          git commit -m "updated version"
-          git push
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
