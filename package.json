@@ -1,7 +1,7 @@
 {
   "name": "ci-cd-ynov-julien-pradier",
   "homepage": "https://julien-pradier.github.io/ynov-tdd-validator/",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "dist/index.js",
   "files": [
     "dist",
