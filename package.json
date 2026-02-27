@@ -22,7 +22,7 @@
     "eject": "react-scripts eject",
     "docs": "jsdoc -R ./README.md -c jsdoc.json -d ./public/docs",
     "cypress": "cypress open",
-    "build-npm": "SET NODE_ENV=production && rm -rf dist && mkdir dist && npx babel src --out-dir dist --copy-files"
+    "build-npm": "cross-env NODE_ENV=production rimraf dist && mkdir dist && npx babel src --out-dir dist --copy-files"
   },
   "eslintConfig": {
     "extends": [
@@ -46,8 +46,10 @@
     "@babel/cli": "^7.28.6",
     "@babel/core": "^7.29.0",
     "@babel/plugin-transform-react-jsx": "^7.28.6",
+    "cross-env": "^7.0.3",
     "cypress": "^15.10.0",
     "jsdoc": "^4.0.5",
-    "react-test-renderer": "^19.2.4"
+    "react-test-renderer": "^19.2.4",
+    "rimraf": "^5.0.5"
   }
 }
