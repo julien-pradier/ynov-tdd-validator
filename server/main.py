@@ -48,7 +48,16 @@ async def get_users():
     sql_select_Query = "select * from utilisateur"
     cursor.execute(sql_select_Query)
     records = cursor.fetchall()
-    return {'utilisateurs': records}
+    return {'utilisateurs': [
+        {
+            "id": r[0],
+            "nom": r[1],
+            "prenom": r[2],
+            "email": r[3],
+            "date_naissance": str(r[4])
+        }
+        for r in records
+    ]}
 
 @app.post("/login")
 async def create_user(login: Login):

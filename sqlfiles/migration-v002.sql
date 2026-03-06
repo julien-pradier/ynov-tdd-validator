@@ -6,6 +6,5 @@ CREATE TABLE utilisateur
     nom            VARCHAR(100),
     prenom         VARCHAR(100),
     email          VARCHAR(255),
-    -- ON CHANGE LE TYPE ICI : VARCHAR au lieu de DATE
-    date_naissance VARCHAR(10)
+    date_naissance DATE
 );
