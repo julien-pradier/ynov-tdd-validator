@@ -9,4 +9,7 @@ CREATE TABLE utilisateur
     date_naissance DATE
 );
 
+INSERT INTO utilisateur (nom, prenom, email, date_naissance)
+VALUES ('Doe', 'John', 'john.doe@ynov.com', '2000-01-01');
+
 DESCRIBE utilisateur;
