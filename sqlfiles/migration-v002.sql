@@ -6,10 +6,6 @@ CREATE TABLE utilisateur
     nom            VARCHAR(100),
     prenom         VARCHAR(100),
     email          VARCHAR(255),
-    date_naissance DATE
+    -- ON CHANGE LE TYPE ICI : VARCHAR au lieu de DATE
+    date_naissance VARCHAR(10)
 );
-
-INSERT INTO utilisateur (nom, prenom, email, date_naissance)
-VALUES ('Doe', 'John', 'john.doe@ynov.com', '2000-01-01');
-
-DESCRIBE utilisateur;
