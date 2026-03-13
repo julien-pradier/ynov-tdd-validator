@@ -1,3 +1,4 @@
+use ynov_ci;
 CREATE TABLE utilisateur
 (
     id             INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
