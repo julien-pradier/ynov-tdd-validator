@@ -195,5 +195,5 @@ jobs:
 
       - name: Push de l'image API
         run: |
-          docker tag $(docker compose images -q api) ${{ secrets.DOCKERHUB_USERNAME }}/api-python-ynov:latest
+          docker tag api-python-ynov:latest ${{ secrets.DOCKERHUB_USERNAME }}/api-python-ynov:latest
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/api-python-ynov:latest
