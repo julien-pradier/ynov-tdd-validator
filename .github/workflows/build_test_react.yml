@@ -161,6 +161,24 @@ jobs:
           docker compose logs api
           exit 1
 
+      - name: Création d'un utilisateur de test (POST)
+        run: |
+          echo "Injection d'un utilisateur de test via l'API..."
+          HTTP_STATUS=$(curl -s -o post_response.json -w "%{http_code}" -X POST http://localhost:8000/users \
+            -H "Content-Type: application/json" \
+            -d '{"name": "Actions", "firstName": "GitHub", "email": "github.actions@test.com", "birthDate": "2000-01-01"}')
+          
+          echo "Code HTTP retourné par le POST : $HTTP_STATUS"
+          echo "Contenu de la réponse :"
+          cat post_response.json
+          echo ""
+          
+          if [ "$HTTP_STATUS" -ne 200 ] && [ "$HTTP_STATUS" -ne 201 ]; then
+            echo "Échec de l'insertion ! Regardons les logs de l'API :"
+            docker compose logs api
+            exit 1
+          fi
+
       - name: Test Curl vers /users
         run: |
           HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" http://localhost:8000/users)
