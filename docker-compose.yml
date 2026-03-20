@@ -1,6 +1,6 @@
 services:
   db:
-    image: mysql:9.6
+    image: mysql:8.0
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
@@ -30,11 +30,27 @@ services:
       db:
         condition: service_healthy
     environment:
+      - MYSQL_HOST=db
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_HOST=db
+
+  react:
+    build:
+      context: .
+      dockerfile: ./DockerfileReact
+    image: react
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    environment:
+      - REACT_APP_SERVER_PORT=8000
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm start
 
   adminer:
     image: adminer

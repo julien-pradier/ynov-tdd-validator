@@ -1,0 +1,19 @@
+# Dépendances locales (inutile car Docker installe les siennes)
+node_modules
+
+# On ignore le backend complet pour ne pas alourdir l'image React
+server/
+__pycache__
+
+# Fichiers de build locaux
+build
+dist
+
+# Fichiers de configuration sensibles
+.env
+.git
+
+# Les Dockerfiles eux-mêmes (ils n'ont rien à faire dans l'image finale)
+DockerfileReact
+server/test.Dockerfile
+docker-compose.yml

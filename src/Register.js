@@ -107,8 +107,15 @@ export default function Register({ users, setUsers }) {
 
         if (Object.keys(currentErrors).length === 0) {
             try {
-                const newUser = await registerUserAPI(formData);
-                setUsers([...users, newUser]);
+                const response = await registerUserAPI(formData);
+                
+                // On reconstitue l'objet attendu par Home.js pour éviter une ligne vide
+                const newUserForState = {
+                    id: response.id,
+                    firstName: formData.firstName,
+                    lastName: formData.lastName
+                };
+                setUsers([...users, newUserForState]);
                 navigate('/');
             } catch (error) {
                 console.error("Erreur d'inscription:", error);
