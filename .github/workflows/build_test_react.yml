@@ -21,6 +21,7 @@ jobs:
 
       - name: npm ci, build and test
         run: |
+          sudo chown -R $USER:$USER .
           npm ci
           npm run build --if-present
           npm run docs
@@ -50,7 +51,9 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Installer les dépendances
-        run: npm ci
+        run: |
+          sudo chown -R $USER:$USER .
+          npm ci
 
       - name: Build package
         run: npm run build-npm
@@ -199,10 +202,12 @@ jobs:
       - name: Préparer Node.js pour Cypress
         uses: actions/setup-node@v3
         with:
-          node-version: 21.x
+          node-version: 22.x
 
       - name: Installer les dépendances locales (Cypress)
-        run: npm ci
+        run: |
+          sudo chown -R $USER:$USER .
+          npm ci
 
       - name: Exécution des tests Cypress E2E
         uses: cypress-io/github-action@v6
