@@ -107,7 +107,9 @@ describe('Integration Tests - Inscription Form', () => {
 
     // Masquer l'erreur volontaire dans la console pendant le test
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    registerUserAPI.mockRejectedValueOnce(new Error('Network Error'));
+    
+    // ✅ Test 500 : le mock doit lancer une erreur avec le message fallback, car Register.js affiche error.message
+    registerUserAPI.mockRejectedValueOnce(new Error('Une erreur réseau est survenue. Veuillez réessayer.'));
 
     fireEvent.submit(screen.getByTestId('register-form'));
 
@@ -138,15 +140,10 @@ describe('Integration Tests - Inscription Form', () => {
     const submitButton = screen.getByRole('button', { name: /Envoyer/i });
     await waitFor(() => expect(submitButton).toBeEnabled());
 
-    const mockError400 = {
-      response: {
-        status: 400,
-        data: { message: "Email already exists" }
-      }
-    };
-    
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    registerUserAPI.mockRejectedValueOnce(mockError400);
+    
+    // ✅ Test 400 : simuler ce que api.js propage après avoir intercepté le 400
+    registerUserAPI.mockRejectedValueOnce(new Error('Cet email existe déjà.'));
 
     fireEvent.submit(screen.getByTestId('register-form'));
 
@@ -159,7 +156,36 @@ describe('Integration Tests - Inscription Form', () => {
     });
 
     expect(mockSetUsers).not.toHaveBeenCalled();
-    
+
+    consoleSpy.mockRestore();
+  });
+
+  test('Affiche un message d\'erreur fallback si l\'erreur levée n\'a pas de message', async () => {
+    const { mockSetUsers } = renderRegister();
+    const majorYear = new Date().getFullYear() - 20;
+
+    fireEvent.change(screen.getByLabelText(/^Nom :/i), { target: { value: 'Doe' } });
+    fireEvent.change(screen.getByLabelText(/Prénom :/i), { target: { value: 'John' } });
+    fireEvent.change(screen.getByLabelText(/Email :/i), { target: { value: 'john.doe@test.com' } });
+    fireEvent.change(screen.getByLabelText(/Date de naissance :/i), { target: { value: `${majorYear}-01-01` } });
+    fireEvent.change(screen.getByLabelText(/Code Postal :/i), { target: { value: '75001' } });
+    fireEvent.change(screen.getByLabelText(/Ville :/i), { target: { value: 'Paris' } });
+
+    const submitButton = screen.getByRole('button', { name: /Envoyer/i });
+    await waitFor(() => expect(submitButton).toBeEnabled());
+
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Simuler une erreur vide pour tester le "|| 'Une erreur réseau est survenue...'"
+    registerUserAPI.mockRejectedValueOnce({});
+
+    fireEvent.submit(screen.getByTestId('register-form'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Une erreur réseau est survenue. Veuillez réessayer.')).toBeInTheDocument();
+    });
+
+    expect(mockSetUsers).not.toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 

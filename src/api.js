@@ -24,11 +24,10 @@ const API_URL = `http://${window.location.hostname}:${port}`;
  */
 export const registerUserAPI = async (userData) => {
     const payload = {
-        name: userData.lastName,   // ← renommage du champ
+        name: userData.lastName,
         firstName: userData.firstName,
         email: userData.email,
         birthDate: userData.birthDate,
-        // zipCode et city sont ignorés par l'API (pas dans UserCreate)
     };
 
     try {
@@ -37,6 +36,10 @@ export const registerUserAPI = async (userData) => {
     } catch (error) {
         if (error.response?.status === 422) {
             console.error("Détail 422 :", JSON.stringify(error.response.data.detail, null, 2));
+        }
+        // ✅ Fix : on traduit le 400 en message lisible pour le composant React
+        if (error.response?.status === 400) {
+            throw new Error('Cet email existe déjà.');
         }
         throw error;
     }
@@ -52,7 +55,6 @@ export const registerUserAPI = async (userData) => {
 export const getUsersAPI = async () => {
     try {
         const response = await axios.get(`${API_URL}/users`);
-        // On traduit "name" du back vers "lastName" pour que Home.js l'affiche correctement
         return response.data.utilisateurs.map(user => ({
             ...user,
             lastName: user.name
@@ -75,7 +77,6 @@ export const getUsersAPI = async () => {
 export const loginAPI = async (email, password) => {
     try {
         const response = await axios.post(`${API_URL}/login`, { email, password });
-        // On retourne uniquement le token depuis l'objet { token: "..." }
         return response.data.token;
     } catch (error) {
         console.error("Erreur réseau lors de la connexion :", error);

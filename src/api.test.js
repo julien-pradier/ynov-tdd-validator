@@ -53,7 +53,20 @@ describe('Service API', () => {
             consoleSpy.mockRestore();
         });
 
-        it("doit lever une exception si l'API renvoie une erreur (ex: Network Error)", async () => {
+        it("doit transformer l'erreur 400 en une nouvelle Error('Cet email existe déjà.')", async () => {
+            const mockUserData = { lastName: 'Dupont' };
+            const error400 = {
+                response: {
+                    status: 400
+                }
+            };
+
+            axios.post.mockRejectedValueOnce(error400);
+
+            await expect(registerUserAPI(mockUserData)).rejects.toThrow('Cet email existe déjà.');
+        });
+
+        it("doit lever une exception si l'API renvoie une erreur non interceptée (ex: Network Error)", async () => {
             const mockUserData = { firstName: 'Julien', lastName: 'Pradier' };
             const networkError = new Error('Network Error');
 

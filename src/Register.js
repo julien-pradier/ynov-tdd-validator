@@ -110,8 +110,6 @@ export default function Register({ users, setUsers }) {
         if (Object.keys(currentErrors).length === 0) {
             try {
                 const response = await registerUserAPI(formData);
-                
-                // On reconstitue l'objet attendu par Home.js pour éviter une ligne vide
                 const newUserForState = {
                     id: response.id,
                     firstName: formData.firstName,
@@ -121,14 +119,7 @@ export default function Register({ users, setUsers }) {
                 navigate('/');
             } catch (error) {
                 console.error("Erreur d'inscription:", error);
-
-                // --- GESTION DE L'ERREUR MÉTIER 400 ---
-                if (error.response && error.response.status === 400) {
-                    setApiError("Cet email existe déjà.");
-                } else {
-                    // Pour toutes les autres erreurs (ex: 500 Crash Serveur)
-                    setApiError('Une erreur réseau est survenue. Veuillez réessayer.');
-                }
+                setApiError(error.message || 'Une erreur réseau est survenue. Veuillez réessayer.');
             }
         }
     };

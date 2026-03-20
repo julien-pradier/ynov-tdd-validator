@@ -26,11 +26,6 @@ jobs:
           npm run docs
           npm test
 
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
-        with:
-          start: npm start
-
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
@@ -133,7 +128,7 @@ jobs:
           echo "=== État des conteneurs ==="
           docker compose ps
 
-          for SERVICE in db api adminer; do
+          for SERVICE in db api adminer react; do
             STATUS=$(docker compose ps --status running --quiet $SERVICE | wc -l)
             if [ "$STATUS" -eq 0 ]; then
               echo "Échec : le conteneur '$SERVICE' n'est pas en état running"
@@ -200,6 +195,22 @@ jobs:
           fi
 
           echo "Validation réussie"
+
+      - name: Préparer Node.js pour Cypress
+        uses: actions/setup-node@v3
+        with:
+          node-version: 21.x
+
+      - name: Installer les dépendances locales (Cypress)
+        run: npm ci
+
+      - name: Exécution des tests Cypress E2E
+        uses: cypress-io/github-action@v6
+        env:
+          CYPRESS_BASE_URL: http://localhost:3000
+        with:
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 60
 
       - name: Arrêt des conteneurs
         if: always()

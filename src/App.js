@@ -21,10 +21,9 @@ export default function App() {
         const fetchInitialUsers = async () => {
             try {
                 const apiUsers = await getUsersAPI();
-                // JSONPlaceholder renvoie { name: "Leanne Graham" }. On l'adapte à notre format.
                 const formattedUsers = apiUsers.map(user => ({
-                    firstName: user.name.split(' ')[0],
-                    lastName: user.name.split(' ')[1] || '',
+                    firstName: user.firstName || user.prenom,
+                    lastName: user.name || user.nom || '',
                     email: user.email
                 }));
                 setUsers(formattedUsers);

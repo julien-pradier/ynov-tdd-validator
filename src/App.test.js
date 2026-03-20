@@ -13,17 +13,21 @@ describe('App Navigation & Data Loading', () => {
     jest.clearAllMocks();
   });
 
-  test('Charge les utilisateurs depuis l\'API au démarrage', async () => {
+  test('Charge les utilisateurs depuis l\'API au démarrage (avec format nom/prenom)', async () => {
+    // On mock le nouveau format attendu depuis l'API Python
     getUsersAPI.mockResolvedValueOnce([
-      { name: 'John Doe', email: 'john@test.com' },
-      { name: 'Zendaya', email: 'zendaya@test.com' }
+      { nom: 'Doe', prenom: 'John', email: 'john@test.com' },
+      { name: 'Smith', firstName: 'Jane', email: 'jane@test.com' }, // Supporte l'anglais aussi
+      { nom: 'Zendaya', email: 'zendaya@test.com' }, // Gère le cas sans prénom
+      { prenom: 'Cher', email: 'cher@test.com' }, // Gère le cas sans nom de famille
+      { email: 'anonymous@test.com' } // Gère le cas sans nom ni prénom
     ]);
 
     window.history.pushState({}, 'Home', '/');
     render(<App />);
 
     await waitFor(() => {
-      expect(screen.getByText("Page d'accueil - 2 users")).toBeInTheDocument();
+      expect(screen.getByText("Page d'accueil - 5 users")).toBeInTheDocument();
     });
 
     expect(getUsersAPI).toHaveBeenCalledTimes(1);
