@@ -86,7 +86,7 @@ export default function Register({ users, setUsers }) {
      * Marque un champ comme "touché" lors du focus out pour déclencher l'affichage de l'erreur
      * @function handleBlur
      * @inner
-     * @param {Object} e - L'événement de perte de focus (blur).
+     * @param {Event} e - L'événement de perte de focus (blur).
      */
     const handleBlur = (e) => {
         const { name } = e.target;
@@ -95,9 +95,11 @@ export default function Register({ users, setUsers }) {
 
     /**
      * Traite la soumission, ajoute l'utilisateur et redirige vers l'accueil.
+     * Gère également l'affichage des erreurs API (ex: email en doublon, erreur réseau).
+     * @async
      * @function handleSubmit
      * @inner
-     * @param {Object} e - L'événement de soumission du formulaire.
+     * @param {Event} e - L'événement de soumission du formulaire (submit).
      */
     const handleSubmit = async (e) => {
         e.preventDefault();

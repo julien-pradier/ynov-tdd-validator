@@ -1,3 +1,9 @@
+/**
+ * @module api
+ * @description Module gérant les communications réseau (requêtes HTTP) avec l'API backend Python.
+ * Centralise tous les appels axios pour l'inscription, la récupération et la connexion.
+ */
+
 import axios from "axios";
 
 const port = process.env.REACT_APP_SERVER_PORT || 8000;
@@ -6,8 +12,15 @@ const API_URL = `http://${window.location.hostname}:${port}`;
 
 /**
  * Envoie les données d'inscription vers notre API Python.
- * @param {Object} userData - Les données du formulaire
+ * @async
+ * @function registerUserAPI
+ * @param {Object} userData - Les données brutes du formulaire.
+ * @param {string} userData.lastName - Le nom de famille.
+ * @param {string} userData.firstName - Le prénom.
+ * @param {string} userData.email - L'adresse email.
+ * @param {string} userData.birthDate - La date de naissance.
  * @returns {Promise<Object>} L'utilisateur créé
+ * @throws {Error} Lance une erreur en cas d'échec réseau ou de validation (422).
  */
 export const registerUserAPI = async (userData) => {
     const payload = {
@@ -31,7 +44,10 @@ export const registerUserAPI = async (userData) => {
 
 /**
  * Récupère la liste des utilisateurs depuis notre API Python au démarrage.
- * @returns {Promise<Array>} La liste des utilisateurs
+ * @async
+ * @function getUsersAPI
+ * @returns {Promise<Array<Object>>} La liste des utilisateurs formatée pour le frontend.
+ * @throws {Error} Lance une erreur si la récupération échoue.
  */
 export const getUsersAPI = async () => {
     try {
@@ -49,9 +65,12 @@ export const getUsersAPI = async () => {
 
 /**
  * Connecte un utilisateur (admin) et récupère le token JWT.
+ * @async
+ * @function loginAPI
  * @param {string} email - L'email de l'administrateur
  * @param {string} password - Le mot de passe de l'administrateur
  * @returns {Promise<string>} Le token JWT
+ * @throws {Error} Lance une erreur si les identifiants sont invalides ou en cas de problème réseau.
  */
 export const loginAPI = async (email, password) => {
     try {

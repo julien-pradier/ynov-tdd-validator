@@ -60,12 +60,7 @@ describe('Integration Tests - Inscription Form', () => {
 
     const mockApiResponse = {
       id: 11,
-      lastName: 'Doe',
-      firstName: 'John',
-      email: 'john.doe@test.com',
-      birthDate: `${majorYear}-01-01`,
-      zipCode: '75001',
-      city: 'Paris'
+      message: "Utilisateur créé avec succès"
     };
     registerUserAPI.mockResolvedValueOnce(mockApiResponse);
 
@@ -87,7 +82,11 @@ describe('Integration Tests - Inscription Form', () => {
     await waitFor(() => {
       expect(mockSetUsers).toHaveBeenCalledTimes(1);
     });
-    expect(mockSetUsers).toHaveBeenCalledWith([...mockUsers, mockApiResponse]);
+    expect(mockSetUsers).toHaveBeenCalledWith([...mockUsers, {
+        id: 11,
+        firstName: 'John',
+        lastName: 'Doe'
+    }]);
 
     expect(mockNavigate).toHaveBeenCalledWith('/');
   });
@@ -106,6 +105,8 @@ describe('Integration Tests - Inscription Form', () => {
     const submitButton = screen.getByRole('button', { name: /Envoyer/i });
     await waitFor(() => expect(submitButton).toBeEnabled());
 
+    // Masquer l'erreur volontaire dans la console pendant le test
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     registerUserAPI.mockRejectedValueOnce(new Error('Network Error'));
 
     fireEvent.submit(screen.getByTestId('register-form'));
@@ -119,6 +120,8 @@ describe('Integration Tests - Inscription Form', () => {
     });
 
     expect(mockSetUsers).not.toHaveBeenCalled();
+    
+    consoleSpy.mockRestore();
   });
 
   test('Affiche une erreur spécifique si l\'email existe déjà (Erreur Métier 400)', async () => {
@@ -141,6 +144,8 @@ describe('Integration Tests - Inscription Form', () => {
         data: { message: "Email already exists" }
       }
     };
+    
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     registerUserAPI.mockRejectedValueOnce(mockError400);
 
     fireEvent.submit(screen.getByTestId('register-form'));
@@ -154,6 +159,8 @@ describe('Integration Tests - Inscription Form', () => {
     });
 
     expect(mockSetUsers).not.toHaveBeenCalled();
+    
+    consoleSpy.mockRestore();
   });
 
   test('Affiche les messages d\'erreur sous les champs lorsqu\'ils sont touchés et invalides', async () => {

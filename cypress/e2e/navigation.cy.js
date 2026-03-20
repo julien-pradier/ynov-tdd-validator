@@ -10,7 +10,7 @@ describe('Navigation et gestion des inscriptions (E2E)', () => {
     // On intercepte le GET initial (liste vide)
     cy.intercept('GET', '**/users', {
       statusCode: 200,
-      body: []
+      body: { utilisateurs: [] }
     }).as('apiGetUsers');
 
     cy.visit('/');
@@ -20,14 +20,11 @@ describe('Navigation et gestion des inscriptions (E2E)', () => {
     cy.contains("Aller s'inscrire").click();
     cy.url().should('include', '/register');
 
-    // CORRECTION DU MOCK : On renvoie firstName et lastName pour correspondre à l'état React
     cy.intercept('POST', '**/users', {
       statusCode: 201,
       body: {
         id: 11,
-        firstName: 'Jean',
-        lastName: 'Dupont',
-        email: 'jean.dupont@test.com'
+        message: "Utilisateur créé avec succès"
       }
     }).as('apiRegister');
 
@@ -57,18 +54,20 @@ describe('Navigation et gestion des inscriptions (E2E)', () => {
     // Ici le mock GET utilise 'name' car App.js le split automatiquement au montage
     cy.intercept('GET', '**/users', {
       statusCode: 200,
-      body: [{
-        id: 1,
-        name: 'Utilisateur Existant',
-        email: 'test@test.com',
-        address: { zipcode: '12345', city: 'Lyon' }
-      }]
+      body: {
+        utilisateurs: [{
+          id: 1,
+          name: 'Existant',
+          firstName: 'Utilisateur',
+          email: 'test@test.com'
+        }]
+      }
     }).as('apiGetUsers');
 
     cy.visit('/');
 
     cy.contains('1 utilisateur(s) inscrit(s)');
-    cy.contains("Aller s'inscrire").click();
+    cy.get('[data-cy="nav-register"]').click();
 
     // On teste un email invalide
     cy.get('[data-cy="input-email"]').type('email-invalide').blur();
@@ -86,7 +85,7 @@ describe('Navigation et gestion des inscriptions (E2E)', () => {
   // ==========================================
   it('Scénario d\'Erreur Métier : Affichage du message si l\'email existe déjà (400)', () => {
 
-    cy.intercept('GET', '**/users', { statusCode: 200, body: [] });
+    cy.intercept('GET', '**/users', { statusCode: 200, body: { utilisateurs: [] } });
     cy.visit('/register');
 
     // On simule l'erreur 400 renvoyée par le serveur
@@ -115,7 +114,7 @@ describe('Navigation et gestion des inscriptions (E2E)', () => {
   // ==========================================
   it('Scénario d\'Erreur Réseau : Affichage du message en cas de panne serveur (500)', () => {
 
-    cy.intercept('GET', '**/users', { statusCode: 200, body: [] });
+    cy.intercept('GET', '**/users', { statusCode: 200, body: { utilisateurs: [] } });
     cy.visit('/register');
 
     cy.intercept('POST', '**/users', {
