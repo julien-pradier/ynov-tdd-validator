@@ -25,6 +25,7 @@ jobs:
           npm ci
           npm run build --if-present
           npm run docs
+          cp -r public/docs build/docs
           npm test
 
       - name: Upload coverage reports to Codecov
