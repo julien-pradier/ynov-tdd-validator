@@ -213,10 +213,9 @@ jobs:
       - name: Exécution des tests Cypress E2E
         uses: cypress-io/github-action@v6
         env:
-          CYPRESS_BASE_URL: http://localhost:3000
           CYPRESS_grepTags: '@erreur500'
         with:
-          wait-on: 'http://localhost:3000'
+          wait-on: 'http://localhost:3000/ynov-tdd-validator'
           wait-on-timeout: 120
 
       - name: Upload screenshots Cypress

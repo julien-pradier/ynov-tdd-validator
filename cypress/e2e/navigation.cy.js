@@ -1,8 +1,5 @@
 /* global cy */
 
-import registerCypressGrep from '@cypress/grep'
-registerCypressGrep()
-
 describe('Navigation et gestion des inscriptions (E2E Réel)', () => {
 
   it('Scénario Nominal : Ajout d\'un nouvel utilisateur avec succès', () => {
@@ -21,7 +18,10 @@ describe('Navigation et gestion des inscriptions (E2E Réel)', () => {
     cy.get('form input').eq(4).type('75000', { force: true });
     cy.get('form input').eq(5).type('Paris', { force: true });
 
+    cy.intercept('POST', '**/users').as('postNewUser');
     cy.get('form button').click({ force: true });
+    cy.wait('@postNewUser');
+    
     cy.url().should('not.include', '/register');
   });
 
@@ -45,8 +45,9 @@ describe('Navigation et gestion des inscriptions (E2E Réel)', () => {
     cy.get('form input').eq(4).type('75000', { force: true });
     cy.get('form input').eq(5).type('Paris', { force: true });
 
+    cy.intercept('POST', '**/users').as('postFirstUser');
     cy.get('form button').click({ force: true });
-    cy.wait(1500);
+    cy.wait('@postFirstUser');
 
     cy.visit('/register');
     cy.get('form').should('be.visible');
@@ -58,8 +59,9 @@ describe('Navigation et gestion des inscriptions (E2E Réel)', () => {
     cy.get('form input').eq(4).type('69000', { force: true });
     cy.get('form input').eq(5).type('Lyon', { force: true });
 
+    cy.intercept('POST', '**/users').as('postSecondUser');
     cy.get('form button').click({ force: true });
-    cy.wait(1500);
+    cy.wait('@postSecondUser').its('response.statusCode').should('eq', 400); // Optionnel mais recommandé : vérifier le code d'erreur
 
     cy.url().should('include', '/register');
   });
