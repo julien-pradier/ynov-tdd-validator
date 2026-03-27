@@ -213,17 +213,11 @@ jobs:
       - name: Exécution des tests Cypress E2E
         uses: cypress-io/github-action@v6
         env:
+          CYPRESS_BASE_URL: http://localhost:3000/ynov-tdd-validator
           CYPRESS_grepTags: '@erreur500'
         with:
           wait-on: 'http://localhost:3000/ynov-tdd-validator'
           wait-on-timeout: 120
-
-      - name: Upload screenshots Cypress
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cypress-screenshots
-          path: cypress/screenshots
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
