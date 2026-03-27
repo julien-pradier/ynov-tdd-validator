@@ -50,6 +50,7 @@
     "@babel/cli": "^7.28.6",
     "@babel/core": "^7.29.0",
     "@babel/plugin-transform-react-jsx": "^7.28.6",
+    "@cypress/grep": "^4.1.0",
     "cross-env": "^7.0.3",
     "cypress": "^15.10.0",
     "jsdoc": "^4.0.5",
