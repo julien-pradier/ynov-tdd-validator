@@ -124,6 +124,7 @@ jobs:
           MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
           MYSQL_USER: ${{ secrets.MYSQL_USER }}
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MY_SECRET: ${{ secrets.MY_SECRET }}
         run: docker compose up -d --build
 
       - name: Vérification que tous les conteneurs sont running
@@ -146,16 +147,16 @@ jobs:
       - name: Attente que l'API soit prête
         run: |
           echo "Attente de la disponibilité de l'API..."
-          for i in $(seq 1 15); do
+          for i in $(seq 1 20); do
             HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/users || echo "000")
             if [ "$HTTP_STATUS" -eq 200 ]; then
               echo "API disponible après $i tentative(s)."
               exit 0
             fi
-            echo "Tentative $i/15 — code HTTP : $HTTP_STATUS. Nouvelle tentative dans 3s..."
-            sleep 3
+            echo "Tentative $i/20 — code HTTP : $HTTP_STATUS. Nouvelle tentative dans 5s..."
+            sleep 5
           done
-          echo "Échec : L'API n'a pas répondu après 45 secondes."
+          echo "Échec : L'API n'a pas répondu après 100 secondes."
           docker compose logs api
           exit 1
 
@@ -216,11 +217,14 @@ jobs:
           CYPRESS_grepTags: '@erreur500'
         with:
           wait-on: 'http://localhost:3000'
-          wait-on-timeout: 60
+          wait-on-timeout: 120
 
-      - name: Arrêt des conteneurs
-        if: always()
-        run: docker compose down --volumes
+      - name: Upload screenshots Cypress
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -232,3 +236,7 @@ jobs:
         run: |
           docker tag api-python-ynov:latest ${{ secrets.DOCKERHUB_USERNAME }}/api-python-ynov:latest
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/api-python-ynov:latest
+
+      - name: Arrêt des conteneurs
+        if: always()
+        run: docker compose down --volumes
