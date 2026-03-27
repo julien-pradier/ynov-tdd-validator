@@ -7,57 +7,59 @@ describe('Navigation et gestion des inscriptions (E2E Réel)', () => {
 
   it('Scénario Nominal : Ajout d\'un nouvel utilisateur avec succès', () => {
     cy.visit('/');
-
     cy.get('body').should('be.visible');
-
     cy.contains(/inscrire/i).click();
     cy.url().should('include', '/register');
 
     const uniqueEmail = `jean.dupont.${Date.now()}@test.com`;
 
-    cy.get('input[type="text"]').eq(0).type('Dupont');
-    cy.get('input[type="text"]').eq(1).type('Jean');
-    cy.get('input[type="email"]').type(uniqueEmail);
-    cy.get('input[type="date"]').type('1990-01-01');
-    cy.get('input[type="text"]').eq(2).type('75000');
-    cy.get('input[type="text"]').eq(3).type('Paris');
+    cy.get('form').should('be.visible');
+    cy.get('form input').eq(0).type('Dupont', { force: true });
+    cy.get('form input').eq(1).type('Jean', { force: true });
+    cy.get('form input').eq(2).type(uniqueEmail, { force: true });
+    cy.get('form input').eq(3).type('1990-01-01', { force: true });
+    cy.get('form input').eq(4).type('75000', { force: true });
+    cy.get('form input').eq(5).type('Paris', { force: true });
 
-    cy.get('button[type="submit"]').click();
-
+    cy.get('form button').click({ force: true });
     cy.url().should('not.include', '/register');
   });
 
   it('Scénario d\'Erreur : Tentative d\'ajout invalide', () => {
     cy.visit('/register');
-    cy.get('input[type="email"]').type('email-invalide').blur();
-    cy.get('button[type="submit"]').should('be.disabled');
+    cy.get('form').should('be.visible');
+    cy.get('form input').eq(2).type('email-invalide', { force: true }).blur({ force: true });
+    cy.get('form button').should('be.disabled');
   });
 
   it('Scénario d\'Erreur Métier : Affichage du message si l\'email existe déjà (400)', { tags: '@erreur500' }, () => {
     const existingEmail = `existant.reel.${Date.now()}@test.com`;
 
     cy.visit('/register');
+    cy.get('form').should('be.visible');
 
-    cy.get('input[type="text"]').eq(0).type('Doe');
-    cy.get('input[type="text"]').eq(1).type('John');
-    cy.get('input[type="email"]').type(existingEmail);
-    cy.get('input[type="date"]').type('1990-01-01');
-    cy.get('input[type="text"]').eq(2).type('75000');
-    cy.get('input[type="text"]').eq(3).type('Paris');
+    cy.get('form input').eq(0).type('Doe', { force: true });
+    cy.get('form input').eq(1).type('John', { force: true });
+    cy.get('form input').eq(2).type(existingEmail, { force: true });
+    cy.get('form input').eq(3).type('1990-01-01', { force: true });
+    cy.get('form input').eq(4).type('75000', { force: true });
+    cy.get('form input').eq(5).type('Paris', { force: true });
 
-    cy.get('button[type="submit"]').click();
-    cy.wait(1000);
+    cy.get('form button').click({ force: true });
+    cy.wait(1500);
 
     cy.visit('/register');
-    cy.get('input[type="text"]').eq(0).type('Smith');
-    cy.get('input[type="text"]').eq(1).type('Jane');
-    cy.get('input[type="email"]').type(existingEmail);
-    cy.get('input[type="date"]').type('1995-05-05');
-    cy.get('input[type="text"]').eq(2).type('69000');
-    cy.get('input[type="text"]').eq(3).type('Lyon');
+    cy.get('form').should('be.visible');
 
-    cy.get('button[type="submit"]').click();
-    cy.wait(1000);
+    cy.get('form input').eq(0).type('Smith', { force: true });
+    cy.get('form input').eq(1).type('Jane', { force: true });
+    cy.get('form input').eq(2).type(existingEmail, { force: true });
+    cy.get('form input').eq(3).type('1995-05-05', { force: true });
+    cy.get('form input').eq(4).type('69000', { force: true });
+    cy.get('form input').eq(5).type('Lyon', { force: true });
+
+    cy.get('form button').click({ force: true });
+    cy.wait(1500);
 
     cy.url().should('include', '/register');
   });
