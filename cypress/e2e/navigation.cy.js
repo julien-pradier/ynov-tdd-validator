@@ -3,7 +3,10 @@
 describe('Navigation et gestion des inscriptions (E2E Réel)', () => {
 
   it('Scénario Nominal : Ajout d\'un nouvel utilisateur avec succès', () => {
+    cy.intercept('GET', '**/users').as('getUsers');
     cy.visit('/');
+    cy.wait('@getUsers').its('response.statusCode').should('eq', 200);
+
     cy.get('body').should('be.visible');
     cy.contains(/inscrire/i).click();
     cy.url().should('include', '/register');
